@@ -2,7 +2,7 @@
 
 If you want to take a look at the app, check it out here: https://squaredlemon.github.io/Lemon-Station/
 
-#NOTE: The website cannot load actual website, if you would like to see the website features, download the application through 'dist/Lemon Station-darwin-arm64/Lemon Station'
+# NOTE: The website cannot load actual website, if you would like to see the website features, download the application through 'dist/Lemon Station-darwin-arm64/Lemon Station'
 
 Static, GitHub Pages-ready build of Lemon Station v0.3. The AI assistant is marked **Coming soon**; no AI backend or API key is needed to host this version.
 
