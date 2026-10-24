@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lemon Station is your friendly daily dashboard for tasks, focus, notes, weather, AI assistance and favourite links.">
+    <meta name="theme-color" content="#fffbea">
+    <title>Lemon Station — Your Daily Dashboard</title>
+        <link rel="stylesheet" href="src/css/styles.css">
+</head>
+
+<!-- PART 3 OF 5: MAIN HTML CONTAINER PANELS -->
+<body class="browser-view-active" data-workspace="hub">
+<button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span class="sidebar-brand-mark" aria-hidden="true">🍋</span>
+        <span class="sidebar-brand-copy"><strong>Lemon Station</strong><small>Your daily companion</small></span>
+    </div>
+    <div class="workspace-switcher">
+        <label for="workspaceProfileSelect">Workspace</label>
+        <select id="workspaceProfileSelect" onchange="switchWorkspace(this.value)" aria-label="Switch workspace">
+            <option value="default">🌐 Default Hub</option>
+            <option value="development">💻 Development</option>
+            <option value="entertainment">🎮 Entertainment</option>
+        </select>
+    </div>
+    <div class="nav-item active" id="navHome" onclick="switchView('dashboard', this)">🏠 Home Base</div>
+    <div class="nav-item" id="navBrowser" onclick="openBrowserHome(this)">🌐 Lemon Browser</div>
+    <div class="nav-item" id="navTimer" onclick="switchView('timerView', this)">⏱️ Flow Timer</div>
+    <div class="nav-item" onclick="switchView('spotifyView', this)">🎵 Spotify Lounge</div>
+    <div class="nav-item" id="navMedia" onclick="openBrowserMedia(this)">🎬 Media</div>
+    <div class="nav-item" onclick="switchView('clipView', this)">📋 Clip History</div>
+    <div class="nav-item" id="navTodo" onclick="switchView('todoView', this)">📋 Tasks</div>
+    <div class="nav-item" id="navWeather" onclick="switchView('weather', this)">🌤️ Weather View</div>
+    <div class="nav-item" id="navNotes" onclick="switchView('notes', this)">🧮 Math Scratchpad</div>
+    <div class="nav-item" id="navAssistant" onclick="switchView('assistantView', this)">✨ Lemon AI</div>
+    <div class="nav-item" onclick="switchView('settings', this)">⚙️ Theme Config</div>
+    <div class="sidebar-footer">
+        <a class="sidebar-footer-link" href="https://open.spotify.com" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">♫</span>
+            <span>Open Spotify</span>
+        </a>
+        <a class="sidebar-footer-link" href="https://linktr.ee/squaredlemon" target="_blank" rel="noopener noreferrer" aria-label="Visit Squaredlemon on Linktree">
+            <img class="sidebar-profile-image" src="assets/squaredlemon-profile.png" alt="">
+            <span class="sidebar-footer-copy"><span>Squaredlemon</span><small>Visit my Linktree ↗</small></span>
+        </a>
+    </div>
+</div>
+<div class="container">
+    <div id="dashboard" class="browser-home-page">
+        <div class="dashboard-customize-row">
+            <button class="dashboard-customize-icon" id="customizeHomeButton" type="button" onclick="toggleHomeCustomization()" aria-label="Customize Home Base" title="Customize Home Base" aria-pressed="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m15 5 4 4"></path>
+                    <path d="M4 20l4.5-1 10-10a2.12 2.12 0 0 0-3-3l-10 10L4 20Z"></path>
+                </svg>
+            </button>
+        </div>
+        <section class="dashboard-hero">
+            <div class="dashboard-hero-copy">
+                <p class="dashboard-kicker" id="date">Loading...</p>
+                <div class="clock-container">
+                    <div class="visualizer-glow" id="visualizerGlow"></div>
+                    <div class="clock" id="clock">00:00:00</div>
+                </div>
+                <h1 class="neon-greeting" id="greeting">Welcome to Lemon Station.</h1>
+                <p class="dashboard-subtitle">A fresh little space to plan your day, find your focus, and keep life moving.</p>
+            </div>
+            <div class="lemon-stamp" aria-hidden="true">🍋</div>
+        </section>
+        <div class="search-box">
+            <form id="smartSearchForm" onsubmit="executeSmartSearch(event)">
+                <input type="search" id="smartSearchInput" placeholder="Search the web or enter a website..." aria-label="Search the web or enter a website" autocomplete="off" autofocus>
+                <button class="search-submit" type="submit">Search</button>
+            </form>
+        </div>
+        <section class="dashboard-customizer" id="homeCustomizerPanel" aria-label="Home screen customization" role="presentation" hidden>
+            <div class="home-customizer-dialog" role="dialog" aria-modal="true" aria-labelledby="homeCustomizerTitle" aria-describedby="homeCustomizationHint">
+                <header class="home-customizer-header">
+                    <div>
+                        <h2 id="homeCustomizerTitle">Customize your Home Base</h2>
+                        <p id="homeCustomizationHint">Select a widget to preview it, then add it to or remove it from your Home Base.</p>
+                    </div>
+                    <button class="home-customizer-close" id="closeHomeCustomizerButton" type="button" aria-label="Close Home Base customization" title="Close">×</button>
+                </header>
+                <div class="home-customizer-content">
+                    <section class="home-customizer-tabs" aria-label="Home Base widgets">
+                        <h3>Choose a widget</h3>
+                        <div class="home-customizer-tab-list" id="homeWidgetTabList" role="list"></div>
+                    </section>
+                    <section class="home-customizer-preview" aria-label="Widget preview">
+                        <h3 id="homeWidgetPreviewTitle">Preview</h3>
+                        <div class="home-widget-preview" id="homeWidgetPreview" aria-live="polite"></div>
+                    </section>
+                </div>
+                <footer class="home-customizer-footer">
+                    <p class="dashboard-customizer-status" id="homeCustomizationStatus" role="status" aria-live="polite">Your Home Base layout is saved on this device.</p>
+                    <div class="home-customizer-footer-actions">
+                        <button id="moveSelectedHomeWidgetUpButton" type="button" aria-label="Move selected widget up">↑ Move up</button>
+                        <button id="moveSelectedHomeWidgetDownButton" type="button" aria-label="Move selected widget down">↓ Move down</button>
+                        <button class="widget-add-button" id="toggleSelectedHomeWidgetButton" type="button">Add or Remove Tab</button>
+                        <button id="resetHomeWidgetsButton" type="button">Reset layout</button>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <div class="dashboard-widgets" id="dashboardWidgets">
+            <section class="dashboard-widget" data-widget-id="shortcuts" data-widget-title="Your everyday shortcuts">
+                <div class="bucket-title">Your everyday shortcuts</div>
+                <div class="shortcuts-grid" id="shortcutsGrid"></div>
+            </section>
+            <section class="dashboard-widget" data-widget-id="bucket" data-widget-title="Save for later">
+                <div class="bucket-container">
+                    <div class="bucket-title">🔖 Save for later · clears each day</div>
+                    <div class="bucket-input-row">
+                        <input type="text" id="bucketInput" placeholder="Paste a temporary link here..." aria-label="Temporary link">
+                        <button type="button" onclick="addBucketLink()">Drop In</button>
+                    </div>
+                    <div class="bucket-links" id="bucketLinks"></div>
+                </div>
+            </section>
+            <section class="dashboard-widget" data-widget-id="habits" data-widget-title="A little care, every day">
+                <section class="daily-card">
+                    <h2>A little care, every day</h2>
+                    <p class="daily-card-intro">Small check-ins count. Your progress resets each new day.</p>
+                    <div class="habit-progress-top">
+                        <span id="habitProgressLabel">0 of 4 done</span>
+                        <span id="habitProgressPercent">0%</span>
+                    </div>
+                    <div class="habit-progress-track" role="progressbar" aria-label="Daily habits completed" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" id="habitProgress">
+                        <div class="habit-progress-fill" id="habitProgressFill"></div>
+                    </div>
+                    <div class="habit-list" id="habitList"></div>
+                </section>
+            </section>
+            <section class="dashboard-widget" data-widget-id="daily" data-widget-title="Make today easier">
+                <section class="daily-card">
+                    <h2>Make today easier</h2>
+                    <p class="daily-card-intro">A few handy tools, right where you need them.</p>
+                    <div class="daily-actions">
+                        <button class="daily-action" type="button" onclick="openTasks()">
+                            <span class="daily-action-icon">✅</span>
+                            <span class="daily-action-copy"><strong>Plan your tasks</strong><span>Get the to-dos out of your head</span></span>
+                        </button>
+                        <button class="daily-action" type="button" onclick="switchView('timerView', document.getElementById('navTimer'))">
+                            <span class="daily-action-icon">⏱️</span>
+                            <span class="daily-action-copy"><strong>Start a focus session</strong><span>Take one thing at a time</span></span>
+                        </button>
+                        <button class="daily-action" type="button" onclick="switchView('notes', document.getElementById('navNotes'))">
+                            <span class="daily-action-icon">📝</span>
+                            <span class="daily-action-copy"><strong>Jot something down</strong><span>Notes and quick calculations</span></span>
+                        </button>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+    <section id="browserView" class="view-panel active" aria-label="Lemon Browser">
+        <section class="browser-card" id="browserCard" aria-label="Lemon Browser workspace">
+            <header class="browser-chrome">
+                <div class="browser-tab-strip">
+                    <div class="browser-tab-list" id="browserTabList" role="tablist" aria-label="Browser tabs"></div>
+                    <button class="browser-new-tab" id="browserNewTabButton" type="button" onclick="createEmbeddedBrowserTab()" aria-label="New tab" title="New tab">+</button>
+                </div>
+                <div class="browser-toolbar">
+                    <button id="browserBackButton" type="button" onclick="navigateEmbeddedBrowser('back')" aria-label="Go back" title="Go back" disabled>←</button>
+                    <button id="browserForwardButton" type="button" onclick="navigateEmbeddedBrowser('forward')" aria-label="Go forward" title="Go forward" disabled>→</button>
+                    <button id="browserReloadButton" type="button" onclick="navigateEmbeddedBrowser('reload')" aria-label="Reload page" title="Reload page" disabled>↻</button>
+                    <button class="browser-home-button" id="browserHomeButton" type="button" onclick="switchView('dashboard', document.getElementById('navHome'))" aria-label="Return to Home Base" title="Home Base">⌂</button>
+                    <button id="browserRestoreTabButton" type="button" onclick="reopenClosedEmbeddedBrowserTab()" aria-label="Reopen closed tab" title="Reopen closed tab">↶</button>
+                    <form class="browser-address-form" id="browserAddressForm" onsubmit="navigateEmbeddedBrowser('address', event)">
+                        <select class="browser-search-provider" id="browserSearchProvider" aria-label="Search engine" title="Choose search engine">
+                            <option value="google">Google</option>
+                            <option value="duckduckgo">DuckDuckGo</option>
+                            <option value="bing">Bing</option>
+                            <option value="brave">Brave</option>
+                        </select>
+                        <span class="browser-security-icon" id="browserSecurityIcon" aria-hidden="true">🍋</span>
+                        <input class="browser-address-input" id="browserAddressInput" type="text" placeholder="Search or enter a web address" aria-label="Search or enter a web address" autocomplete="off" spellcheck="false">
+                        <button class="browser-go-button" type="submit">Go</button>
+                    </form>
+                    <button class="browser-bookmark-button" id="browserBookmarkButton" type="button" onclick="toggleEmbeddedBrowserBookmark()" aria-label="Bookmark this page" title="Bookmark this page" aria-pressed="false">☆</button>
+                    <button id="browserHistoryButton" type="button" onclick="openEmbeddedBrowserHistory()" aria-label="Browsing history" title="Browsing history">◷</button>
+                </div>
+                <nav class="browser-bookmarks" id="browserBookmarks" aria-label="Bookmarks"></nav>
+            </header>
+            <div class="browser-progress" id="browserProgress" aria-hidden="true"><span id="browserProgressFill"></span></div>
+            <p class="browser-status" id="browserStatus" role="status" aria-live="polite">Lemon Browser is ready. Search or enter a web address.</p>
+            <div class="browser-page-viewport" id="browserPageViewport">
+                <webview
+                    class="browser-webview"
+                    id="hubBrowser"
+                    src="about:blank"
+                    partition="persist:lemon-hub-browser"
+                    webpreferences="contextIsolation=yes,nodeIntegration=no,sandbox=yes"
+                    aria-label="Web page">
+                </webview>
+                <section class="browser-media-page" id="browserMediaPage" aria-label="Media">
+                    <header class="media-view-header">
+                        <h1>Vidcore</h1>
+                        <p>Play a movie with its IMDb or TMDB ID.</p>
+                    </header>
+                    <form class="media-player-form" id="vidcorePlayerForm" onsubmit="loadVidcoreMovie(event)">
+                        <label for="vidcoreMediaType">Type</label>
+                        <select id="vidcoreMediaType" onchange="toggleVidcoreMediaType()">
+                            <option value="movie">Movie</option>
+                            <option value="tv">TV show</option>
+                        </select>
+                        <label for="vidcoreMovieId" id="vidcoreIdLabel">Movie ID</label>
+                        <input id="vidcoreMovieId" type="text" value="tt6263850" placeholder="IMDb (tt6263850) or TMDB (533535)" pattern="(?:tt[0-9]{7,8}|[0-9]{1,10})" required>
+                        <label for="vidcoreSeason" id="vidcoreSeasonLabel" hidden>Season</label>
+                        <input id="vidcoreSeason" type="number" min="1" step="1" value="1" aria-label="Season" hidden>
+                        <label for="vidcoreEpisode" id="vidcoreEpisodeLabel" hidden>Episode</label>
+                        <input id="vidcoreEpisode" type="number" min="1" step="1" value="1" aria-label="Episode" hidden>
+                        <button type="submit">Play</button>
+                        <a href="https://vidcore.io/documentation" target="_blank" rel="noopener noreferrer">Embed guide</a>
+                    </form>
+                    <form class="media-title-search" onsubmit="searchVidcoreTitles(event)">
+                        <label for="vidcoreTitleQuery">Find a title</label>
+                        <input id="vidcoreTitleQuery" type="search" placeholder="Search movie or TV show titles">
+                        <button type="submit">Search titles</button>
+                    </form>
+                    <div id="vidcoreSearchResults" class="media-search-results" aria-live="polite"></div>
+                    <iframe
+                        class="media-view-frame"
+                        src="https://vidcore.io/movie/tt6263850"
+                        title="Vidcore player"
+                        width="100%"
+                        height="100%"
+                        frameborder="0"
+                        allowfullscreen
+                        allow="encrypted-media"></iframe>
+                </section>
+            </div>
+        </section>
+        <dialog class="browser-history-dialog" id="browserHistoryDialog" aria-labelledby="browserHistoryTitle">
+            <div class="browser-history-header">
+                <div>
+                    <p class="browser-history-eyebrow">Saved on this device</p>
+                    <h2 id="browserHistoryTitle">Browsing history</h2>
+                </div>
+                <button class="browser-history-close" type="button" onclick="closeEmbeddedBrowserHistory()" aria-label="Close history">×</button>
+            </div>
+            <label class="browser-history-search-label" for="browserHistorySearch">Find a page</label>
+            <input class="browser-history-search" id="browserHistorySearch" type="search" placeholder="Search titles or addresses..." autocomplete="off">
+            <div class="browser-history-list" id="browserHistoryList"></div>
+            <p class="browser-history-empty" id="browserHistoryEmpty">Pages you visit will appear here.</p>
+            <div class="browser-history-footer">
+                <span id="browserHistoryCount">0 pages</span>
+                <button class="browser-history-clear" id="browserHistoryClearButton" type="button" onclick="clearEmbeddedBrowserHistory()">Clear history</button>
+            </div>
+        </dialog>
+    </section>
+    <div id="timerView" class="view-panel">
+        <header class="tool-heading">
+            <p class="tool-eyebrow">Focus & recharge</p>
+            <h1>⏱️ Flow timer</h1>
+            <p>Make room for one thing at a time. Choose a session length and settle in.</p>
+        </header>
+        <div class="timer-layout">
+            <section class="timer-box" aria-label="Focus timer">
+                <div class="timer-mode-label" id="timerModeLabel">Focus session</div>
+                <div class="timer-dial" id="timerDial">
+                    <div class="timer-dial-inner">
+                        <div class="timer-display" id="timerDisplay">25:00</div>
+                        <div class="timer-remaining-label" id="timerRemainingLabel">Ready when you are</div>
+                    </div>
+                </div>
+                <div class="timer-presets" role="group" aria-label="Timer duration">
+                    <button class="timer-preset active" type="button" data-minutes="25" onclick="setTimerPreset(25, 'Focus session', this)">25 min</button>
+                    <button class="timer-preset" type="button" data-minutes="50" onclick="setTimerPreset(50, 'Deep focus', this)">50 min</button>
+                    <button class="timer-preset" type="button" data-minutes="5" onclick="setTimerPreset(5, 'Short break', this)">5 min</button>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-start-btn" onclick="toggleSprintTimer()" id="timerControlBtn">Start focus</button>
+                    <button class="timer-reset-btn" onclick="resetSprintTimer()">Reset</button>
+                </div>
+                <p class="timer-status" id="timerStatus" role="status" aria-live="polite">Choose a session and press start.</p>
+            </section>
+            <aside class="timer-side-panel">
+                <div class="tool-side-card">
+                    <span class="tool-side-icon">🌿</span>
+                    <h2>Take a gentle pause</h2>
+                    <p>Short breaks help you come back refreshed. Try a five-minute reset between focus sessions.</p>
+                    <button class="timer-side-action" type="button" onclick="setTimerPreset(5, 'Short break', document.querySelector('.timer-preset[data-minutes=&quot;5&quot;]')); toggleSprintTimer()">Start a 5-minute break</button>
+                </div>
+                <div class="tool-side-card ambient-card">
+                    <span class="tool-side-icon">🎧</span>
+                    <h2>Ambient focus</h2>
+                    <p>Play a soft filtered-noise loop while you work.</p>
+                    <button class="timer-side-action" id="audioToggleBtn" type="button" onclick="toggleAmbientBeats()">Play ambient sound</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="spotifyView" class="view-panel">
+        <section class="spotify-lounge" aria-labelledby="spotifyTitle">
+            <p class="spotify-eyebrow">A little room to unwind</p>
+            <h1 id="spotifyTitle">Lo-fi listening lounge</h1>
+            <p class="spotify-intro">Settle in, find a favourite, and let the background noise fade away.</p>
+            <form class="spotify-search" onsubmit="searchSpotify(event)">
+                <input id="spotifySearchInput" type="search" placeholder="Search songs, artists, or albums..." aria-label="Search Spotify" autocomplete="off">
+                <button type="submit">Search Spotify</button>
+            </form>
+            <div class="spotify-presets" aria-label="Popular searches">
+                <button class="spotify-preset" type="button" onclick="searchSpotifyQuery('lofi beats')">lofi beats</button>
+                <button class="spotify-preset" type="button" onclick="searchSpotifyQuery('chill study music')">study focus</button>
+                <button class="spotify-preset" type="button" onclick="searchSpotifyQuery('jazzhop')">jazzhop</button>
+            </div>
+            <p class="spotify-player-label">Now playing: Lo-Fi Beats</p>
+            <iframe
+                class="spotify-player"
+                src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0"
+                title="Spotify Lo-Fi Beats playlist"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy">
+            </iframe>
+            <p class="spotify-footnote">Search opens Spotify in a new tab. Playback in the embedded playlist may require a Spotify account.</p>
+            <noscript><p class="spotify-footnote">Enable JavaScript to search Spotify from this lounge.</p></noscript>
+        </section>
+    </div>
+    <div id="clipView" class="view-panel">
+        <header class="tool-heading">
+            <p class="tool-eyebrow">Keep useful things close</p>
+            <h1>📋 Clipboard shelf</h1>
+            <p>Save up to ten recent text snippets in this browser. Nothing is uploaded.</p>
+        </header>
+        <div class="clip-panel">
+            <div class="tool-panel-toolbar">
+                <div>
+                    <h2 class="tool-panel-title">Saved snippets</h2>
+                    <p class="tool-panel-subtitle" id="clipCount">No snippets saved yet</p>
+                </div>
+                <div class="tool-button-group">
+                    <button class="save-btn clip-capture-btn" type="button" onclick="captureClipboardText()">＋ Capture clipboard</button>
+                    <button class="tool-secondary-btn" id="clipLoggerToggle" type="button" onclick="toggleClipLogger()" aria-pressed="false">Start in-page copy logging</button>
+                    <button class="tool-secondary-btn" id="clearClipsButton" type="button" onclick="clearClipHistory()" disabled>Clear all</button>
+                </div>
+            </div>
+            <p class="settings-help">When enabled, copied text from Lemon Station is saved locally. This does not monitor clipboard activity in other apps.</p>
+            <p class="tool-feedback" id="clipStatus" role="status" aria-live="polite"></p>
+            <div class="clip-history" id="clipHistoryReel"></div>
+        </div>
+    </div>
+    <div id="todoView" class="view-panel">
+        <header class="tool-heading">
+            <p class="tool-eyebrow">One step at a time</p>
+            <h1>✅ Today’s tasks</h1>
+            <p>Capture what’s on your mind, then focus on what matters next.</p>
+        </header>
+        <div class="todo-panel">
+            <div class="todo-overview">
+                <div><span class="todo-count-number" id="todoRemainingCount">0</span><span class="todo-count-caption">left to do</span></div>
+                <div class="todo-overview-progress"><span id="todoProgressFill"></span></div>
+                <span class="todo-count-caption" id="todoCompletedCount">0 completed</span>
+            </div>
+            <form class="todo-row" onsubmit="addTodoItem(event)">
+                <input type="text" id="todoInput" placeholder="What would you like to get done?" aria-label="New task" maxlength="160" autocomplete="off">
+                <button class="quick-btn todo-add-btn" type="submit">Add task</button>
+            </form>
+            <div class="todo-toolbar">
+                <div class="todo-filters" role="group" aria-label="Filter tasks">
+                    <button class="todo-filter active" type="button" data-filter="all" onclick="setTodoFilter('all', this)">All</button>
+                    <button class="todo-filter" type="button" data-filter="active" onclick="setTodoFilter('active', this)">To do</button>
+                    <button class="todo-filter" type="button" data-filter="completed" onclick="setTodoFilter('completed', this)">Done</button>
+                </div>
+                <button class="tool-text-btn" id="clearCompletedButton" type="button" onclick="clearCompletedTodos()">Clear completed</button>
+            </div>
+            <div class="todo-list" id="todoList"></div>
+            <p class="tool-feedback" id="todoStatus" role="status" aria-live="polite"></p>
+        </div>
+    </div>
+    <div id="weather" class="view-panel">
+        <header class="tool-heading">
+            <p class="tool-eyebrow">A little heads-up from outdoors</p>
+            <h1>🌤️ Local weather</h1>
+            <p>Check current conditions before you head out. Search towns around the world.</p>
+        </header>
+        <div class="weather-layout">
+            <section class="weather-panel">
+                <form class="weather-search" onsubmit="getLiveWeather(event)">
+                    <input type="search" id="weatherCity" placeholder="Search a town or city..." aria-label="Weather location" autocomplete="off">
+                    <button type="submit" id="weatherSearchButton">Check weather</button>
+                </form>
+                <div class="quick-locations">
+                    <button class="quick-btn" type="button" onclick="fetchAdelaideWeather()">📍 Adelaide</button>
+                    <button class="quick-btn" type="button" onclick="setWeatherCity('Melbourne')">Melbourne</button>
+                    <button class="quick-btn" type="button" onclick="setWeatherCity('Sydney')">Sydney</button>
+                </div>
+                <div class="weather-current">
+                    <div>
+                        <p class="weather-label">Current conditions</p>
+                        <h2 id="wLocation">Search for a location</h2>
+                        <p class="weather-condition" id="wDesc">Your forecast will appear here.</p>
+                    </div>
+                    <div class="weather-icon" id="wIcon" aria-hidden="true">🍋</div>
+                </div>
+                <div class="weather-temp" id="wTemp">--°</div>
+                <p class="weather-updated" id="weatherStatus" role="status" aria-live="polite">Weather provided by wttr.in.</p>
+                <div class="weather-details">
+                    <div class="weather-detail"><span>Feels like</span><strong id="wFeelsLike">--°</strong></div>
+                    <div class="weather-detail"><span>Humidity</span><strong id="wHumidity">--%</strong></div>
+                    <div class="weather-detail"><span>Wind</span><strong id="wWind">--</strong></div>
+                </div>
+                <div class="forecast-section">
+                    <h3>Coming up</h3>
+                    <div class="forecast-list" id="weatherForecast">
+                        <p class="forecast-empty">Search a location to see the upcoming forecast.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id="notes" class="view-panel">
+        <header class="tool-heading">
+            <p class="tool-eyebrow">Think it through</p>
+            <h1>🧮 Notes &amp; quick maths</h1>
+            <p>A private scratchpad saved on this device, with simple arithmetic worked out as you type.</p>
+        </header>
+        <div class="notes-workspace">
+            <section class="notes-editor-panel">
+                <div class="tool-panel-toolbar">
+                    <div>
+                        <h2 class="tool-panel-title">Your scratchpad</h2>
+                        <p class="tool-panel-subtitle" id="notesSaveStatus">Saved on this device</p>
+                    </div>
+                    <button class="tool-secondary-btn" type="button" onclick="clearScratchpad()">Clear notes</button>
+                </div>
+                <textarea class="notes-area" id="notepad" aria-label="Notes and arithmetic scratchpad" placeholder="Jot down a thought or put a calculation on its own line, like (500 × 2) / 4" oninput="evaluateScratchpadMath()"></textarea>
+                <div class="notes-hints">
+                    <span>Try:</span>
+                    <button type="button" onclick="insertMathExample('(500 * 2) / 4')">(500 × 2) ÷ 4</button>
+                    <button type="button" onclick="insertMathExample('15% * 80')">15% × 80</button>
+                    <span>Supports + − × ÷ and parentheses.</span>
+                </div>
+            </section>
+            <section class="notes-results-panel">
+                <div class="tool-panel-toolbar">
+                    <div>
+                        <h2 class="tool-panel-title">Quick calculations</h2>
+                        <p class="tool-panel-subtitle">One result per line</p>
+                    </div>
+                    <span class="calculation-count" id="calculationCount">0</span>
+                </div>
+                <div class="eval-output" id="mathEvalOutput" aria-live="polite"></div>
+            </section>
+        </div>
+    </div>
+    <div id="assistantView" class="view-panel">
+        <header class="tool-heading">
+            <p class="tool-eyebrow">A little help is on the way</p>
+            <h1>✨ Lemon AI assistant</h1>
+            <p>A thoughtful everyday helper is being prepared for Lemon Station.</p>
+        </header>
+        <section class="assistant-coming-soon" aria-labelledby="assistantComingTitle">
+            <span class="assistant-coming-icon" aria-hidden="true">🍋</span>
+            <span class="assistant-coming-badge">Coming soon</span>
+            <h2 id="assistantComingTitle">A brighter way to get things done</h2>
+            <p>Lemon AI is being prepared to help you plan your day, break big tasks into easy steps, and find a little focus when you need it. Check back soon.</p>
+            <ul class="assistant-coming-features" aria-label="Planned Lemon AI features">
+                <li>🌱 Daily planning</li>
+                <li>🧩 Break tasks into steps</li>
+                <li>⏱️ Focus and reset ideas</li>
+            </ul>
+            <p class="assistant-coming-note">For now, your tasks, Flow Timer, and scratchpad are ready to use.</p>
+        </section>
+    </div>
+    <div id="settings" class="view-panel">
+        <h1 style="color: var(--lemon-yellow);">⚙️ Personalise Lemon Station</h1>
+        <div class="settings-panel">
+            <p class="settings-intro">Make your daily space feel like yours. Your preferences stay saved in this browser.</p>
+
+            <section class="settings-section" aria-labelledby="themeSettingsTitle">
+                <h2 class="settings-section-title" id="themeSettingsTitle">🍋 Pick a citrus palette</h2>
+                <p class="settings-help">Choose a colour mood, then fine-tune the accent if you like.</p>
+                <div class="theme-options" role="group" aria-label="Theme palette">
+                    <button class="theme-option" type="button" data-theme-choice="lemon" aria-pressed="true" onclick="selectTheme('lemon')">
+                        <span class="theme-swatch" aria-hidden="true"><span style="background:#f5cf36"></span><span style="background:#426e45"></span><span style="background:#f8f3dc"></span></span>
+                        <span>Classic Lemon</span>
+                    </button>
+                    <button class="theme-option" type="button" data-theme-choice="lime" aria-pressed="false" onclick="selectTheme('lime')">
+                        <span class="theme-swatch" aria-hidden="true"><span style="background:#b8d957"></span><span style="background:#4d7542"></span><span style="background:#f0f5df"></span></span>
+                        <span>Lime Grove</span>
+                    </button>
+                    <button class="theme-option" type="button" data-theme-choice="blossom" aria-pressed="false" onclick="selectTheme('blossom')">
+                        <span class="theme-swatch" aria-hidden="true"><span style="background:#efb6a5"></span><span style="background:#6f7650"></span><span style="background:#fff2e9"></span></span>
+                        <span>Pink Lemonade</span>
+                    </button>
+                </div>
+                <div class="setting-row" style="margin:18px 0 0;">
+                    <label for="primaryColorInput">Custom accent colour</label>
+                    <div class="setting-color-row">
+                        <input class="setting-control color-picker" type="color" id="primaryColorInput" value="#f5cf36" aria-label="Custom accent colour">
+                        <span id="accentColorValue">#F5CF36</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="settings-section" aria-labelledby="profileSettingsTitle">
+                <h2 class="settings-section-title" id="profileSettingsTitle">👋 Your dashboard</h2>
+                <p class="settings-help">Set the name in your greeting and choose how the clock looks.</p>
+                <div class="setting-row">
+                    <label for="displayNameInput">Greeting name</label>
+                    <input class="setting-control" type="text" id="displayNameInput" maxlength="32" placeholder="Lemon">
+                </div>
+                <div class="setting-row">
+                    <label for="clockFormatSelect">Clock format</label>
+                    <select class="setting-control" id="clockFormatSelect">
+                        <option value="12">12-hour</option>
+                        <option value="24">24-hour</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="settings-section" aria-labelledby="backgroundSettingsTitle">
+                <h2 class="settings-section-title" id="backgroundSettingsTitle">🌿 Background</h2>
+                <p class="settings-help">Keep the soft citrus backdrop or use your own image URL.</p>
+                <div class="setting-row">
+                    <label for="backgroundStyleSelect">Backdrop style</label>
+                    <select class="setting-control" id="backgroundStyleSelect">
+                        <option value="citrus">Soft citrus</option>
+                        <option value="grove">Lemon grove</option>
+                        <option value="custom">Custom image</option>
+                    </select>
+                </div>
+                <div class="setting-row" id="wallpaperSettingRow" hidden>
+                    <label for="wallpaperUrlInput">Image URL</label>
+                    <input class="setting-control" type="url" id="wallpaperUrlInput" placeholder="https://example.com/image.jpg" autocomplete="url">
+                </div>
+            </section>
+
+            <button class="save-btn" type="button" onclick="saveConfigurationSettings()">Save preferences</button>
+            <p class="settings-status" id="settingsStatus" role="status" aria-live="polite"></p>
+            <button class="settings-reset" type="button" onclick="resetConfigurationSettings()">Reset to classic Lemon</button>
+        </div>
+    </div>
+</div>
+
+    <script src="src/js/core.js"></script>
+    <script src="src/js/home-widgets.js"></script>
+    <script src="src/js/browser.js"></script>
+    <script src="src/js/daily-tools.js"></script>
+    <script src="src/js/settings.js"></script>
+    <script src="src/js/weather.js"></script>
+    <script src="src/js/shortcuts.js"></script>
+    <script src="src/js/workspaces.js"></script>
+    <script src="src/js/app.js"></script>
+</body>
+</html>
