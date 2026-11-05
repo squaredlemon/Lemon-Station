@@ -4,13 +4,20 @@
   "description": "Premium Neon Glassmorphic Workstation and Browser Hub",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "package:windows": "node scripts/package-windows.js",
+    "test:ai": "node --test ai-worker/test/worker.test.js"
   },
   "author": "Lemon",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "hardhat": "^3.21.0",
+    "hardhat-ethers": "^1.0.1",
+    "web3": "^4.16.0"
+  },
   "devDependencies": {
     "electron": "^28.0.0",
+    "electron-builder": "^26.18.0",
     "electron-packager": "^17.1.2"
   }
 }

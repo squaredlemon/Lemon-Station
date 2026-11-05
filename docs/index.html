@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f8ef">
+    <meta name="description" content="Meet Lemon Station: a calmer home for your browser, daily plans, focus tools, and favorite links. Use the browser-based web app or explore the macOS-only desktop app.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Lemon Station — Your day, in a better place">
+    <meta property="og:description" content="A bright, personal workspace for your browser, plans, and everyday tools.">
+    <meta property="og:image" content="assets/lemon-station-mark.svg">
+    <link rel="canonical" href="https://lemonstation.app/">
+    <title>Lemon Station — Your day, in a better place</title>
+    <link rel="icon" href="assets/lemon-station-mark.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+        <a class="brand" href="#" aria-label="Lemon Station home">
+            <img src="assets/lemon-station-mark.svg" alt="" width="40" height="40">
+            <span>Lemon<span class="brand-light">Station</span></span>
+        </a>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="Open navigation">
+            <span></span><span></span>
+        </button>
+        <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#downloads">Downloads</a>
+            <a class="nav-cta" href="/test/">Open the app <span aria-hidden="true">↗</span></a>
+        </nav>
+    </header>
+
+    <main id="main">
+        <section class="hero section-shell">
+            <div class="hero-copy">
+                <p class="eyebrow"><span class="eyebrow-dot"></span> A little more room for your day</p>
+                <h1>Your day,<br>in a <span>better place.</span></h1>
+                <p class="hero-description">A thoughtful workspace for the things you do every day. Bring your browser, plans, focus, and favorite links together—without the noise.</p>
+                <div class="hero-actions">
+                    <a class="button button-primary" href="/test/">Try Lemon Station <span aria-hidden="true">→</span></a>
+                    <a class="button button-secondary" href="#downloads">Explore downloads</a>
+                </div>
+                <div class="hero-proof">
+                    <span class="proof-icon" aria-hidden="true">✦</span>
+                    <p><strong>Made for real days.</strong><br>Personal, calm, and ready when you are.</p>
+                </div>
+            </div>
+
+            <div class="product-scene" aria-label="Illustration of the Lemon Station dashboard">
+                <div class="scene-orbit orbit-one"></div>
+                <div class="scene-orbit orbit-two"></div>
+                <div class="floating-note note-top"><span>☀</span> A fresh start</div>
+                <div class="floating-note note-bottom"><span class="note-check">✓</span> One thing at a time</div>
+                <div class="product-window">
+                    <div class="window-top">
+                        <div class="window-brand"><img src="assets/lemon-station-mark.svg" alt=""><span>Lemon Station</span></div>
+                        <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+                    </div>
+                    <div class="window-body">
+                        <aside class="mock-sidebar" aria-hidden="true">
+                            <div class="mock-search">⌕ <span>Jump to anything</span></div>
+                            <div class="mock-nav active"><span>⌂</span> Home Base</div>
+                            <div class="mock-nav"><span>◉</span> Lemon Browser</div>
+                            <div class="mock-nav"><span>◷</span> Flow Timer</div>
+                            <div class="mock-nav"><span>♫</span> Spotify Lounge</div>
+                            <div class="mock-nav"><span>▤</span> Tasks</div>
+                            <div class="mock-nav"><span>⚙</span> Theme Config</div>
+                            <div class="mock-sidebar-footer"><span>🍋</span><span>Make today yours</span></div>
+                        </aside>
+                        <div class="mock-content">
+                            <div class="mock-greeting">
+                                <span class="mock-date">MONDAY, OCTOBER 12</span>
+                                <div class="mock-time">09:41 <span>AM</span></div>
+                                <h2>Good morning, Alex.</h2>
+                                <p>A little progress is still progress.</p>
+                                <span class="hero-lemon" aria-hidden="true">🍋</span>
+                            </div>
+                            <div class="mock-searchbar">⌕ <span>Search the web or enter a website…</span><b>Search</b></div>
+                            <div class="mock-section-heading"><span>YOUR EVERYDAY SHORTCUTS</span><span>Customize</span></div>
+                            <div class="mock-shortcuts">
+                                <div><span>◈</span> Linktree</div><div><span>⌘</span> GitHub</div><div><span>◉</span> Modrinth</div>
+                            </div>
+                            <div class="mock-bottom-grid">
+                                <div class="mock-widget">
+                                    <div class="widget-heading"><span>DAILY CHECK-IN</span><span>1 / 4</span></div>
+                                    <p><b class="checked">✓</b> Drink a glass of water</p>
+                                    <p><b></b> Choose one priority</p>
+                                    <div class="mock-progress"><i></i></div>
+                                </div>
+                                <div class="mock-widget focus-widget">
+                                    <span class="focus-label">A MOMENT OF FOCUS</span>
+                                    <div class="focus-time">25:00</div>
+                                    <span class="focus-button">Start a session</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span class="sparkle sparkle-one" aria-hidden="true">✳</span>
+                <span class="sparkle sparkle-two" aria-hidden="true">✦</span>
+            </div>
+        </section>
+
+        <section class="trust-strip" aria-label="Lemon Station highlights">
+            <div><strong>01</strong><span>Your space, your rhythm</span></div>
+            <div><strong>02</strong><span>Useful tools, all together</span></div>
+            <div><strong>03</strong><span>Start on the web</span></div>
+        </section>
+
+        <section class="features section-shell" id="features">
+            <div class="section-heading">
+                <p class="eyebrow">A workspace that feels like yours</p>
+                <h2>Less juggling.<br><span>More getting into it.</span></h2>
+                <p>Keep the useful parts of your day close by, in a space that feels clear from the first click.</p>
+            </div>
+            <div class="feature-grid">
+                <article class="feature-card feature-wide feature-browser">
+                    <span class="feature-icon" aria-hidden="true">↗</span>
+                    <p class="feature-kicker">BROWSE WITH ROOM TO THINK</p>
+                    <h3>Your browser, in your workspace.</h3>
+                    <p>Search the web, keep handy pages in reach, and move between tabs without losing the flow of your day.</p>
+                    <div class="mini-browser" aria-hidden="true"><span>🍋 New tab</span><div>⌕ &nbsp; Search or enter a web address</div><b>＋</b></div>
+                </article>
+                <article class="feature-card feature-planning">
+                    <span class="feature-icon" aria-hidden="true">☑</span>
+                    <p class="feature-kicker">A CLEARER HEAD</p>
+                    <h3>Make a plan that fits.</h3>
+                    <p>Capture tasks, check in on small habits, and make your shortcuts and Home Base widgets your own.</p>
+                    <div class="planning-visual" aria-hidden="true"><span>✓</span><span>Choose one priority</span><i></i></div>
+                </article>
+                <article class="feature-card feature-focus">
+                    <span class="feature-icon" aria-hidden="true">◷</span>
+                    <p class="feature-kicker">FOCUS, AT YOUR PACE</p>
+                    <h3>Give one thing your attention.</h3>
+                    <p>Start a focus timer, take a small reset, or use your scratchpad to get thoughts out of your head.</p>
+                    <div class="focus-visual" aria-hidden="true"><span>25</span><small>MINUTES</small></div>
+                </article>
+                <article class="feature-card feature-personal">
+                    <span class="feature-icon" aria-hidden="true">✳</span>
+                    <p class="feature-kicker">YOUR KIND OF SPACE</p>
+                    <h3>Switch moods, keep your flow.</h3>
+                    <p>Set up separate workspaces for everyday life, development, or entertainment—with themes to match.</p>
+                    <div class="workspace-pills" aria-hidden="true"><span>🌐 Everyday</span><span>💻 Dev</span><span>🎮 Play</span></div>
+                </article>
+                <article class="feature-card feature-small">
+                    <span class="feature-icon" aria-hidden="true">♫</span>
+                    <p class="feature-kicker">A SOFTER SOUNDTRACK</p>
+                    <h3>Settle into your rhythm.</h3>
+                    <p>Find music in Spotify and bring a little lo-fi calm to your work session.</p>
+                </article>
+                <article class="feature-card feature-small">
+                    <span class="feature-icon" aria-hidden="true">✧</span>
+                    <p class="feature-kicker">A HELPFUL SPARK</p>
+                    <h3>Meet Lemon AI.</h3>
+                    <p>Get help planning or breaking down a task with your own private Gemini connection.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="how-section" id="how-it-works">
+            <div class="how-layout section-shell">
+                <div class="how-copy">
+                    <p class="eyebrow">Easy to make your own</p>
+                    <h2>Start simple.<br><span>Shape it as you go.</span></h2>
+                    <p>There’s no setup checklist to finish before Lemon Station feels useful. Open Home Base, make a small plan, and add the tools you want when you need them.</p>
+                    <a class="text-link" href="/test/">Take a look around <span aria-hidden="true">→</span></a>
+                </div>
+                <ol class="steps-list">
+                    <li><span>01</span><div><h3>Open your Home Base</h3><p>Your greeting, search, favorite links, and daily tools are ready in one place.</p></div></li>
+                    <li><span>02</span><div><h3>Find your flow</h3><p>Choose a workspace, set a focus session, or make a quick list.</p></div></li>
+                    <li><span>03</span><div><h3>Make it yours</h3><p>Move widgets around, pick a theme, and add the sidebar tools that suit you.</p></div></li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="download-section section-shell" id="downloads">
+            <div class="download-card">
+                <div class="download-copy">
+                    <p class="eyebrow">Take Lemon Station with you</p>
+                    <h2>Your next good idea<br>can start <span>right here.</span></h2>
+                    <p>Use the web app in your browser, or download a local copy of the project. The native desktop app is macOS-only; a public Mac installer is not available yet.</p>
+                    <div class="download-actions">
+                        <a class="button button-primary" href="/test/">Open the web app <span aria-hidden="true">↗</span></a>
+                        <a class="button button-download" href="downloads/Lemon-Station.zip" download="Lemon-Station.zip">Download Lemon Station ZIP <span aria-hidden="true">↓</span></a>
+                    </div>
+                    <p class="download-footnote">The ZIP contains project files and setup instructions, not a one-click installer. The web app is browser-based; desktop support is macOS-only.</p>
+                </div>
+                <div class="download-art" aria-hidden="true">
+                    <div class="download-sun"></div>
+                    <div class="download-lemon">🍋</div>
+                    <div class="download-leaf"></div>
+                    <span class="download-wordmark">A fresh space<br>for everyday.</span>
+                </div>
+            </div>
+            <div class="download-notes">
+                <div><span class="download-note-icon">◎</span><p><strong>Use it in your browser</strong><br>Start with the hosted web app—no install needed.</p></div>
+                <div><span class="download-note-icon">⌘</span><p><strong>Want a local copy?</strong><br>Download the ZIP and follow the included setup guide.</p></div>
+                <div><span class="download-note-icon">↗</span><p><strong>Desktop: macOS only</strong><br>The native app currently targets Mac. A public installer is not available yet.</p></div>
+            </div>
+        </section>
+
+        <section class="faq-section section-shell" id="faq">
+            <div class="faq-heading">
+                <p class="eyebrow">A few useful details</p>
+                <h2>Good to know.</h2>
+            </div>
+            <div class="faq-list">
+                <details>
+                    <summary>Is Lemon Station free?</summary>
+                    <p>The web app and project ZIP are available above. Some optional services—such as Gemini AI or Supabase cloud sync—need your own accounts and may have provider-specific limits or costs.</p>
+                </details>
+                <details>
+                    <summary>Can I browse any website inside the web app?</summary>
+                    <p>The website version embeds sites that allow iframe display. Some sites block embedding; use the browser’s open-in-new-tab option for those. The Electron desktop app uses an embedded browser instead.</p>
+                </details>
+                <details>
+                    <summary>What does Lemon AI need?</summary>
+                    <p>Lemon AI is optional. It needs a separately deployed Cloudflare Worker and your Gemini API key configured there. Your API key is not included in the download or sent from the page directly to Google.</p>
+                </details>
+                <details>
+                    <summary>Are desktop installers available?</summary>
+                    <p>The native desktop app currently supports macOS only, and there is no public one-click Mac installer yet. The ZIP contains project files and setup instructions, not a ready-made installer. The web app remains browser-based.</p>
+                </details>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <a class="brand footer-brand" href="#" aria-label="Lemon Station home">
+            <img src="assets/lemon-station-mark.svg" alt="" width="34" height="34">
+            <span>Lemon<span class="brand-light">Station</span></span>
+        </a>
+        <p>A little more room for your day.</p>
+        <div class="footer-links">
+            <a href="/test/">Open app</a>
+            <a href="https://github.com/squaredlemon/Lemon-Station">GitHub</a>
+            <a href="#downloads">Downloads</a>
+        </div>
+        <small>© <span id="currentYear"></span> Lemon Station</small>
+    </footer>
+</body>
+</html>

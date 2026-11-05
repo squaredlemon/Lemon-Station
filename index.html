@@ -17,6 +17,11 @@
         <span class="sidebar-brand-mark" aria-hidden="true">🍋</span>
         <span class="sidebar-brand-copy"><strong>Lemon Station</strong><small>Your daily companion</small></span>
     </div>
+    <button class="quick-switch-trigger" id="openCommandPaletteButton" type="button" aria-haspopup="dialog">
+        <span class="quick-switch-search-icon" aria-hidden="true">⌕</span>
+        <span>Jump to anything</span>
+        <kbd>⌘ K</kbd>
+    </button>
     <div class="workspace-switcher">
         <label for="workspaceProfileSelect">Workspace</label>
         <select id="workspaceProfileSelect" onchange="switchWorkspace(this.value)" aria-label="Switch workspace">
@@ -25,17 +30,22 @@
             <option value="entertainment">🎮 Entertainment</option>
         </select>
     </div>
-    <div class="nav-item active" id="navHome" onclick="switchView('dashboard', this)">🏠 Home Base</div>
-    <div class="nav-item" id="navBrowser" onclick="openBrowserHome(this)">🌐 Lemon Browser</div>
-    <div class="nav-item" id="navTimer" onclick="switchView('timerView', this)">⏱️ Flow Timer</div>
-    <div class="nav-item" onclick="switchView('spotifyView', this)">🎵 Spotify Lounge</div>
-    <div class="nav-item" id="navMedia" onclick="openBrowserMedia(this)">🎬 Media</div>
-    <div class="nav-item" onclick="switchView('clipView', this)">📋 Clip History</div>
-    <div class="nav-item" id="navTodo" onclick="switchView('todoView', this)">📋 Tasks</div>
-    <div class="nav-item" id="navWeather" onclick="switchView('weather', this)">🌤️ Weather View</div>
-    <div class="nav-item" id="navNotes" onclick="switchView('notes', this)">🧮 Math Scratchpad</div>
-    <div class="nav-item" id="navAssistant" onclick="switchView('assistantView', this)">✨ Lemon AI</div>
-    <div class="nav-item" onclick="switchView('settings', this)">⚙️ Theme Config</div>
+    <button class="nav-item active" id="navHome" type="button" aria-current="page" onclick="switchView('dashboard', this)">🏠 Home Base</button>
+    <button class="nav-item" id="navBrowser" type="button" onclick="openBrowserHome(this)">🌐 Lemon Browser</button>
+    <button class="nav-item" id="navTimer" type="button" onclick="switchView('timerView', this)">⏱️ Flow Timer</button>
+    <button class="nav-item" id="navSpotify" type="button" onclick="switchView('spotifyView', this)">🎵 Spotify Lounge</button>
+    <button class="nav-item" id="navMedia" type="button" onclick="switchView('mediaView', this)">🎬 Media</button>
+    <button class="nav-item" id="navClip" type="button" onclick="switchView('clipView', this)">📋 Clip History</button>
+    <button class="nav-item" id="navTodo" type="button" onclick="switchView('todoView', this)">📋 Tasks</button>
+    <button class="nav-item" id="navWeather" type="button" onclick="switchView('weather', this)">🌤️ Weather View</button>
+    <button class="nav-item" id="navNotes" type="button" onclick="switchView('notes', this)">🧮 Math Scratchpad</button>
+    <button class="nav-item" id="navAssistant" type="button" onclick="switchView('assistantView', this)">✨ Lemon AI</button>
+    <div class="sidebar-app-group" id="sidebarAppGroup" hidden>
+        <span class="sidebar-app-heading">MY APPS</span>
+        <div id="sidebarAppNav"></div>
+    </div>
+    <button class="nav-item" id="navBrowserStore" type="button" onclick="switchView('extensionStore', this)">🧩 Browser Store</button>
+    <button class="nav-item" id="navSettings" type="button" onclick="switchView('settings', this)">⚙️ Theme Config</button>
     <div class="sidebar-footer">
         <a class="sidebar-footer-link" href="https://open.spotify.com" target="_blank" rel="noopener noreferrer">
             <span aria-hidden="true">♫</span>
@@ -46,6 +56,84 @@
             <span class="sidebar-footer-copy"><span>Squaredlemon</span><small>Visit my Linktree ↗</small></span>
         </a>
     </div>
+</div>
+<dialog class="command-palette" id="commandPalette" aria-labelledby="commandPaletteTitle">
+    <div class="command-palette-search">
+        <span aria-hidden="true">⌕</span>
+        <label class="sr-only" id="commandPaletteTitle" for="commandPaletteInput">Search pages and tools</label>
+        <input id="commandPaletteInput" type="search" placeholder="Search pages and tools…" autocomplete="off" spellcheck="false">
+        <kbd>ESC</kbd>
+    </div>
+    <p class="command-palette-section-label">PAGES &amp; TOOLS</p>
+    <div class="command-palette-results" id="commandPaletteResults" role="listbox" aria-label="Pages and tools"></div>
+    <p class="command-palette-empty" id="commandPaletteEmpty" hidden>No matching pages or tools.</p>
+    <footer class="command-palette-footer"><span>↑↓ to navigate</span><span>↵ to open</span><span>ESC to close</span></footer>
+</dialog>
+<section class="welcome-overlay" id="welcomeOverlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" hidden>
+    <div class="welcome-card">
+        <div class="welcome-orbit welcome-orbit-one" aria-hidden="true"></div>
+        <div class="welcome-orbit welcome-orbit-two" aria-hidden="true"></div>
+        <div class="welcome-content">
+            <div class="welcome-brand-mark" aria-hidden="true">🍋</div>
+            <section class="welcome-screen welcome-name-screen" id="welcomeNameScreen">
+                <p class="welcome-eyebrow">WELCOME TO LEMON STATION</p>
+                <h1 id="welcomeTitle">What should we call you?</h1>
+                <p class="welcome-intro">Let’s make this your space. What name should we use?</p>
+                <label class="welcome-field">
+                    <span>Your name</span>
+                    <input id="welcomeName" type="text" maxlength="32" autocomplete="given-name" placeholder="Your name">
+                </label>
+                <div class="welcome-actions">
+                    <button class="welcome-continue" type="button" onclick="startWelcomeTour()">Show me around <span aria-hidden="true">→</span></button>
+                    <button class="welcome-skip" type="button" onclick="finishWelcomeSetup(false)">Skip setup for now</button>
+                </div>
+                <svg class="welcome-intro-pointer" viewBox="0 0 28 36" aria-hidden="true">
+                    <path d="M4.6 3.2c-.1-1.1 1.2-1.8 2.1-.9l17 15.2c.9.8.4 2.3-.8 2.4l-7 .5 4.3 9.1c.5 1 .1 2.1-.9 2.6l-1.3.6c-1 .5-2.1.1-2.6-.9l-4.3-9.1-4.8 5.2c-.8.9-2.3.4-2.3-.8L4.6 3.2Z" fill="#f5cf36" stroke="#263322" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </section>
+            <section class="welcome-screen welcome-colors-screen" id="welcomeColorsScreen" hidden>
+                <p class="welcome-eyebrow">MAKE IT FEEL LIKE YOURS · 1 OF 2</p>
+                <h1>Choose your colors</h1>
+                <p class="welcome-intro">Pick a palette and workspace. You can change them whenever you like.</p>
+                <div class="welcome-setup">
+                    <label class="welcome-field">
+                        <span>Choose your workspace</span>
+                        <select id="welcomeWorkspace">
+                            <option value="default">🌐 Default Hub</option>
+                            <option value="development">💻 Development</option>
+                            <option value="entertainment">🎮 Entertainment</option>
+                        </select>
+                    </label>
+                    <fieldset class="welcome-theme-picker">
+                        <legend>Pick a starting palette</legend>
+                        <div class="welcome-theme-options">
+                            <button type="button" class="welcome-theme-option" data-theme="lemon" aria-pressed="true" onclick="selectWelcomeTheme('lemon', this)"><span class="welcome-theme-swatch theme-lemon"></span>Classic Lemon</button>
+                            <button type="button" class="welcome-theme-option" data-theme="lime" aria-pressed="false" onclick="selectWelcomeTheme('lime', this)"><span class="welcome-theme-swatch theme-lime"></span>Fresh Lime</button>
+                            <button type="button" class="welcome-theme-option" data-theme="blossom" aria-pressed="false" onclick="selectWelcomeTheme('blossom', this)"><span class="welcome-theme-swatch theme-blossom"></span>Soft Blossom</button>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="welcome-actions">
+                    <button class="welcome-continue" type="button" onclick="continueToWidgetSetup()">Customize widgets <span aria-hidden="true">→</span></button>
+                    <button class="welcome-skip" type="button" onclick="finishWelcomeSetup(true)">Finish setup</button>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+<div class="welcome-tour-guide" id="welcomeTourGuide" role="dialog" aria-live="polite" aria-labelledby="welcomeTourTitle" hidden>
+    <span class="welcome-tour-step" id="welcomeTourStep">1 / 3</span>
+    <h2 id="welcomeTourTitle">Your sidebar</h2>
+    <p id="welcomeTourCopy">Open the sidebar to move between Home, your tools, and settings.</p>
+    <div class="welcome-tour-actions">
+        <button type="button" class="welcome-tour-skip" onclick="skipWelcomeTour()">Skip tour</button>
+        <button type="button" class="welcome-tour-next" id="welcomeTourNext" onclick="advanceWelcomeTour()">Next →</button>
+    </div>
+</div>
+<div class="welcome-tour-cursor" id="welcomeTourCursor" aria-hidden="true">
+    <svg viewBox="0 0 28 36" focusable="false">
+        <path d="M4.6 3.2c-.1-1.1 1.2-1.8 2.1-.9l17 15.2c.9.8.4 2.3-.8 2.4l-7 .5 4.3 9.1c.5 1 .1 2.1-.9 2.6l-1.3.6c-1 .5-2.1.1-2.6-.9l-4.3-9.1-4.8 5.2c-.8.9-2.3.4-2.3-.8L4.6 3.2Z" fill="#f5cf36" stroke="#263322" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
 </div>
 <div class="container">
     <div id="dashboard" class="browser-home-page">
@@ -180,8 +268,10 @@
                         <input class="browser-address-input" id="browserAddressInput" type="text" placeholder="Search or enter a web address" aria-label="Search or enter a web address" autocomplete="off" spellcheck="false">
                         <button class="browser-go-button" type="submit">Go</button>
                     </form>
+                    <div class="browser-extension-actions" id="browserExtensionActions" aria-label="Installed browser extensions" hidden></div>
                     <button class="browser-bookmark-button" id="browserBookmarkButton" type="button" onclick="toggleEmbeddedBrowserBookmark()" aria-label="Bookmark this page" title="Bookmark this page" aria-pressed="false">☆</button>
                     <button id="browserHistoryButton" type="button" onclick="openEmbeddedBrowserHistory()" aria-label="Browsing history" title="Browsing history">◷</button>
+                    <button class="browser-external-button" id="browserOpenExternalButton" type="button" onclick="openBrowserPageExternally()" aria-label="Open page in a new tab" title="Open page in a new tab" hidden>↗</button>
                 </div>
                 <nav class="browser-bookmarks" id="browserBookmarks" aria-label="Bookmarks"></nav>
             </header>
@@ -196,42 +286,6 @@
                     webpreferences="contextIsolation=yes,nodeIntegration=no,sandbox=yes"
                     aria-label="Web page">
                 </webview>
-                <section class="browser-media-page" id="browserMediaPage" aria-label="Media">
-                    <header class="media-view-header">
-                        <h1>Vidcore</h1>
-                        <p>Play a movie with its IMDb or TMDB ID.</p>
-                    </header>
-                    <form class="media-player-form" id="vidcorePlayerForm" onsubmit="loadVidcoreMovie(event)">
-                        <label for="vidcoreMediaType">Type</label>
-                        <select id="vidcoreMediaType" onchange="toggleVidcoreMediaType()">
-                            <option value="movie">Movie</option>
-                            <option value="tv">TV show</option>
-                        </select>
-                        <label for="vidcoreMovieId" id="vidcoreIdLabel">Movie ID</label>
-                        <input id="vidcoreMovieId" type="text" value="tt6263850" placeholder="IMDb (tt6263850) or TMDB (533535)" pattern="(?:tt[0-9]{7,8}|[0-9]{1,10})" required>
-                        <label for="vidcoreSeason" id="vidcoreSeasonLabel" hidden>Season</label>
-                        <input id="vidcoreSeason" type="number" min="1" step="1" value="1" aria-label="Season" hidden>
-                        <label for="vidcoreEpisode" id="vidcoreEpisodeLabel" hidden>Episode</label>
-                        <input id="vidcoreEpisode" type="number" min="1" step="1" value="1" aria-label="Episode" hidden>
-                        <button type="submit">Play</button>
-                        <a href="https://vidcore.io/documentation" target="_blank" rel="noopener noreferrer">Embed guide</a>
-                    </form>
-                    <form class="media-title-search" onsubmit="searchVidcoreTitles(event)">
-                        <label for="vidcoreTitleQuery">Find a title</label>
-                        <input id="vidcoreTitleQuery" type="search" placeholder="Search movie or TV show titles">
-                        <button type="submit">Search titles</button>
-                    </form>
-                    <div id="vidcoreSearchResults" class="media-search-results" aria-live="polite"></div>
-                    <iframe
-                        class="media-view-frame"
-                        src="https://vidcore.io/movie/tt6263850"
-                        title="Vidcore player"
-                        width="100%"
-                        height="100%"
-                        frameborder="0"
-                        allowfullscreen
-                        allow="encrypted-media"></iframe>
-                </section>
             </div>
         </section>
         <dialog class="browser-history-dialog" id="browserHistoryDialog" aria-labelledby="browserHistoryTitle">
@@ -251,6 +305,50 @@
                 <button class="browser-history-clear" id="browserHistoryClearButton" type="button" onclick="clearEmbeddedBrowserHistory()">Clear history</button>
             </div>
         </dialog>
+    </section>
+    <section id="mediaView" class="view-panel media-view" aria-label="Media Lounge">
+        <header class="media-view-header">
+            <div>
+                <p class="media-eyebrow">LEMON STATION · WATCH LOUNGE</p>
+                <h1>🎬 Media Lounge</h1>
+                <p>Find a movie or episode, then settle in.</p>
+            </div>
+        </header>
+        <form class="media-player-form" id="vidcorePlayerForm" onsubmit="loadVidcoreMovie(event)">
+            <label for="vidcoreMediaType">Title type</label>
+            <select id="vidcoreMediaType" onchange="toggleVidcoreMediaType()">
+                <option value="movie">Movie</option>
+                <option value="tv">TV show</option>
+            </select>
+            <label for="vidcoreMovieId" id="vidcoreIdLabel">Movie ID</label>
+            <input id="vidcoreMovieId" type="text" inputmode="text" placeholder="IMDb ID (tt6263850) or TMDB ID (533535)" required>
+            <label for="vidcoreSeason" id="vidcoreSeasonLabel" hidden>Season</label>
+            <input id="vidcoreSeason" type="number" min="1" step="1" value="1" aria-label="Season" hidden disabled>
+            <label for="vidcoreEpisode" id="vidcoreEpisodeLabel" hidden>Episode</label>
+            <input id="vidcoreEpisode" type="number" min="1" step="1" value="1" aria-label="Episode" hidden disabled>
+            <button type="submit">Play</button>
+            <a id="vidcoreGuide" href="https://vidcore.io/documentation" target="_blank" rel="noopener noreferrer">Embed guide ↗</a>
+        </form>
+        <p class="media-source-hint" id="mediaSourceHint">Search for a title to find its IMDb ID, then press Play.</p>
+        <div class="media-title-tools">
+            <form class="media-title-search" onsubmit="searchVidcoreTitles(event)">
+                <label for="vidcoreTitleQuery">Find a title</label>
+                <input id="vidcoreTitleQuery" type="search" placeholder="Search movie or TV show titles">
+                <button type="submit">Search titles</button>
+            </form>
+        </div>
+        <div id="vidcoreSearchResults" class="media-search-results" role="status" aria-live="polite"></div>
+        <p class="media-player-status" id="mediaPlayerStatus" role="status" aria-live="polite">Enter a title ID and press Play. If it does not load, check the ID and try again.</p>
+        <iframe
+            class="media-view-frame"
+            id="mediaPlayerFrame"
+            src="about:blank"
+            title="Vidcore player"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            allowfullscreen
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
     </section>
     <div id="timerView" class="view-panel">
         <header class="tool-heading">
@@ -450,27 +548,196 @@
     </div>
     <div id="assistantView" class="view-panel">
         <header class="tool-heading">
-            <p class="tool-eyebrow">A little help is on the way</p>
+            <p class="tool-eyebrow">A thoughtful everyday companion</p>
             <h1>✨ Lemon AI assistant</h1>
-            <p>A thoughtful everyday helper is being prepared for Lemon Station.</p>
+            <p>Plan your day, untangle a task, or find a gentler way to focus.</p>
         </header>
-        <section class="assistant-coming-soon" aria-labelledby="assistantComingTitle">
-            <span class="assistant-coming-icon" aria-hidden="true">🍋</span>
-            <span class="assistant-coming-badge">Coming soon</span>
-            <h2 id="assistantComingTitle">A brighter way to get things done</h2>
-            <p>Lemon AI is being prepared to help you plan your day, break big tasks into easy steps, and find a little focus when you need it. Check back soon.</p>
-            <ul class="assistant-coming-features" aria-label="Planned Lemon AI features">
-                <li>🌱 Daily planning</li>
-                <li>🧩 Break tasks into steps</li>
-                <li>⏱️ Focus and reset ideas</li>
-            </ul>
-            <p class="assistant-coming-note">For now, your tasks, Flow Timer, and scratchpad are ready to use.</p>
-        </section>
+        <div class="ai-workspace">
+            <section class="ai-connection-card" aria-labelledby="aiConnectionTitle">
+                <div class="ai-connection-heading">
+                    <div>
+                        <h2 id="aiConnectionTitle">Connect Lemon AI</h2>
+                        <p>Gemini runs through your private Cloudflare Worker. Your Gemini key stays on the server.</p>
+                    </div>
+                    <span class="ai-connection-indicator" id="aiConnectionIndicator" data-state="disconnected">Not connected</span>
+                </div>
+                <form id="aiConnectionForm" class="ai-connection-form">
+                    <label>
+                        <span>Cloudflare Worker URL</span>
+                        <input id="aiWorkerUrl" type="url" inputmode="url" placeholder="https://lemon-station-ai.your-name.workers.dev" autocomplete="url" required>
+                    </label>
+                    <label>
+                        <span>Private access code</span>
+                        <input id="aiAccessCode" type="password" placeholder="The code you set as LEMON_AI_ACCESS_TOKEN" autocomplete="off" required>
+                    </label>
+                    <div class="ai-connection-actions">
+                        <button class="save-btn" id="aiConnectButton" type="submit">Connect</button>
+                        <button class="settings-reset" id="aiDisconnectButton" type="button" hidden>Forget connection</button>
+                    </div>
+                </form>
+                <p class="ai-connection-status" id="aiConnectionStatus" role="status" aria-live="polite">Deploy the Worker in the <code>ai-worker</code> folder, then connect it here.</p>
+                <details class="ai-setup-details">
+                    <summary>How to set up the private Gemini connection</summary>
+                    <ol>
+                        <li>Follow <code>ai-worker/README.md</code> to deploy the Worker and set your Gemini API key and private access code as Cloudflare secrets.</li>
+                        <li>Use a long, unique access code. Enter the Worker URL and the same code above; Lemon Station keeps the code in this browser session only.</li>
+                        <li>Only the current message and recent chat are sent to Gemini. Your tasks are included only when you turn on the task-context option below.</li>
+                    </ol>
+                </details>
+            </section>
+
+            <section class="ai-chat-card" aria-label="Chat with Lemon AI">
+                <div class="ai-chat-toolbar">
+                    <div>
+                        <h2>Let’s make today easier</h2>
+                        <p>Helpful, practical ideas—one step at a time.</p>
+                    </div>
+                    <button class="tool-secondary-btn" id="aiClearChatButton" type="button">Clear chat</button>
+                </div>
+                <div class="ai-suggestions" role="group" aria-label="Suggested prompts">
+                    <button type="button" data-ai-prompt="Help me make a simple plan for today.">Plan my day</button>
+                    <button type="button" data-ai-prompt="Help me break my biggest task into small, clear steps.">Break down a task</button>
+                    <button type="button" data-ai-prompt="Suggest a gentle five-minute reset to help me refocus.">Take a focus reset</button>
+                </div>
+                <ol class="ai-message-list" id="aiMessageList" aria-live="polite" aria-relevant="additions text"></ol>
+                <p class="ai-chat-status" id="aiChatStatus" role="status" aria-live="polite"></p>
+                <form class="ai-chat-form" id="aiChatForm">
+                    <label class="sr-only" for="aiMessageInput">Message Lemon AI</label>
+                    <textarea id="aiMessageInput" rows="2" maxlength="4000" placeholder="What would you like help with?" required></textarea>
+                    <div class="ai-chat-form-footer">
+                        <label class="ai-context-toggle">
+                            <input id="aiIncludeTasks" type="checkbox">
+                            <span>Include my open tasks with this chat</span>
+                        </label>
+                        <button class="save-btn" id="aiSendButton" type="submit" disabled>Send <span aria-hidden="true">→</span></button>
+                    </div>
+                </form>
+                <p class="ai-privacy-note">AI can make mistakes. Don’t share passwords or highly sensitive information. Conversations stay in this tab and aren’t saved to your Lemon Station account.</p>
+            </section>
+        </div>
     </div>
+    <div id="extensionStore" class="view-panel extension-store">
+        <header class="tool-heading">
+            <p class="tool-eyebrow">Made for Lemon Browser</p>
+            <h1>🧩 Browser Store</h1>
+            <p>Install handy browser extensions or add built-in apps to your sidebar.</p>
+        </header>
+        <div class="browser-store-tabs" role="tablist" aria-label="Browser Store categories">
+            <button class="browser-store-tab" id="browserStoreExtensionsTab" type="button" role="tab" aria-selected="true" aria-controls="browserStoreExtensionsPanel">Extensions</button>
+            <button class="browser-store-tab" id="browserStoreAppsTab" type="button" role="tab" aria-selected="false" aria-controls="browserStoreAppsPanel">Apps</button>
+        </div>
+        <section class="extension-catalog browser-store-panel" id="browserStoreExtensionsPanel" role="tabpanel" aria-labelledby="browserStoreExtensionsTab" aria-label="Available browser extensions">
+            <div class="extension-catalog-heading">
+                <div>
+                    <h2>Extensions for your browser</h2>
+                    <p>These built-in tools work on pages you open in Lemon Browser.</p>
+                </div>
+                <span class="extension-count" id="extensionCount"></span>
+            </div>
+            <div class="extension-card-grid" id="extensionCatalog"></div>
+        </section>
+        <section class="extension-catalog browser-store-panel" id="browserStoreAppsPanel" role="tabpanel" aria-labelledby="browserStoreAppsTab" aria-label="Sidebar apps" hidden>
+            <div class="extension-catalog-heading">
+                <div>
+                    <h2>Apps for your sidebar</h2>
+                    <p>Add built-in tools to your sidebar, then open them whenever you need them.</p>
+                </div>
+                <span class="extension-count" id="sidebarAppCount"></span>
+            </div>
+            <div class="extension-card-grid" id="sidebarAppCatalog"></div>
+        </section>
+        <p class="extension-store-status" id="extensionStoreStatus" role="status" aria-live="polite"></p>
+    </div>
+    <div id="sidebarAppPanels"></div>
     <div id="settings" class="view-panel">
-        <h1 style="color: var(--lemon-yellow);">⚙️ Personalise Lemon Station</h1>
+        <h1 class="settings-page-title">Settings</h1>
         <div class="settings-panel">
-            <p class="settings-intro">Make your daily space feel like yours. Your preferences stay saved in this browser.</p>
+            <p class="settings-intro">Make your daily space feel like yours. Your preferences save on this device; connect an account to sync them across devices.</p>
+
+            <section class="settings-section" aria-labelledby="accountSettingsTitle">
+                <h2 class="settings-section-title" id="accountSettingsTitle">☁️ Accounts &amp; sync</h2>
+                <p class="settings-help">Sign in to keep your Lemon Station data in sync across devices.</p>
+                <div class="setting-row">
+                    <label for="accountEmailInput">Email address</label>
+                    <input class="setting-control account-control" id="accountEmailInput" type="email" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="setting-row">
+                    <label for="accountPasswordInput">Password</label>
+                    <input class="setting-control account-control" id="accountPasswordInput" type="password" placeholder="At least 8 characters" autocomplete="current-password">
+                </div>
+                <div class="account-actions">
+                    <button class="save-btn account-action" type="button" onclick="signInToLemonAccount()">Sign in</button>
+                    <button class="settings-reset account-action" type="button" onclick="createLemonAccount()">Create account</button>
+                    <button class="settings-reset account-action" id="signOutAccountButton" type="button" onclick="signOutLemonAccount()" hidden>Sign out</button>
+                </div>
+                <p class="settings-status" id="accountStatus" role="status" aria-live="polite">To sync across devices, set up online storage below first. Your data stays on this device until then.</p>
+                <div class="account-conflicts" id="accountConflictNotice" hidden></div>
+                <details class="account-setup" id="accountSetupDetails">
+                    <summary>First time? Set up sync (about 5 minutes)</summary>
+                    <ol class="account-setup-steps">
+                        <li>Make a free project at <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer">Supabase</a>. A project is your private, online storage.</li>
+                        <li>In your project, open <strong>SQL Editor → New query</strong>. Copy the setup below, paste it into the editor, and click <strong>Run</strong>. It is safe to run again if you already tried this.</li>
+                        <li>Open <strong>Project Settings → API</strong>. Copy the <strong>Project URL</strong> and <strong>Publishable key</strong> into the fields below, then choose <strong>Save project details</strong>.</li>
+                        <li>Enter your email and password here, then choose <strong>Create account</strong>. After that, sign in on your other devices with the same account.</li>
+                    </ol>
+                    <details class="account-sql-details">
+                        <summary>Show database setup</summary>
+                        <textarea id="supabaseSchemaText" class="account-schema" readonly aria-label="Database setup SQL">create table if not exists public.lemon_user_data (
+    user_id uuid primary key references auth.users (id) on delete cascade,
+    data jsonb not null default '{}'::jsonb,
+    updated_at timestamptz not null default now()
+);
+
+alter table public.lemon_user_data enable row level security;
+
+grant select, insert, update on public.lemon_user_data to authenticated;
+
+drop policy if exists "Users can read their own Lemon Station data" on public.lemon_user_data;
+create policy "Users can read their own Lemon Station data"
+    on public.lemon_user_data
+    for select
+    to authenticated
+    using ((select auth.uid()) = user_id);
+
+drop policy if exists "Users can insert their own Lemon Station data" on public.lemon_user_data;
+create policy "Users can insert their own Lemon Station data"
+    on public.lemon_user_data
+    for insert
+    to authenticated
+    with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Users can update their own Lemon Station data" on public.lemon_user_data;
+create policy "Users can update their own Lemon Station data"
+    on public.lemon_user_data
+    for update
+    to authenticated
+    using ((select auth.uid()) = user_id)
+    with check ((select auth.uid()) = user_id);</textarea>
+                        <button class="settings-reset account-copy-button" type="button" onclick="copyAccountSetupSql()">Copy database setup</button>
+                    </details>
+                    <div class="setting-row">
+                        <label for="supabaseUrlInput">Project URL</label>
+                        <input class="setting-control account-control" id="supabaseUrlInput" type="url" placeholder="https://your-project.supabase.co" autocomplete="url" spellcheck="false">
+                    </div>
+                    <div class="setting-row">
+                        <label for="supabaseKeyInput">Publishable key</label>
+                        <input class="setting-control account-control" id="supabaseKeyInput" type="password" placeholder="Publishable key" autocomplete="off" spellcheck="false">
+                    </div>
+                    <button class="save-btn account-action" type="button" onclick="saveSupabaseConnection()">Save project details</button>
+                    <p class="settings-help account-key-note">Only use the publishable key. Never paste a secret or service-role key here.</p>
+                </details>
+            </section>
+
+            <section class="settings-section" aria-labelledby="backupSettingsTitle">
+                <h2 class="settings-section-title" id="backupSettingsTitle">📦 Backup &amp; restore</h2>
+                <p class="settings-help">Export a copy of your workspaces, tasks, shortcuts, notes, and preferences, or restore them from a Lemon Station backup.</p>
+                <div class="account-actions">
+                    <button class="save-btn account-action" type="button" onclick="exportLemonBackup()">Export backup</button>
+                    <button class="settings-reset account-action" type="button" onclick="document.getElementById('lemonBackupFile').click()">Restore backup</button>
+                    <input id="lemonBackupFile" type="file" accept="application/json,.json" hidden onchange="importLemonBackup(this)">
+                </div>
+                <p class="settings-status" id="backupStatus" role="status" aria-live="polite"></p>
+            </section>
 
             <section class="settings-section" aria-labelledby="themeSettingsTitle">
                 <h2 class="settings-section-title" id="themeSettingsTitle">🍋 Pick a citrus palette</h2>
@@ -534,11 +801,13 @@
             <button class="save-btn" type="button" onclick="saveConfigurationSettings()">Save preferences</button>
             <p class="settings-status" id="settingsStatus" role="status" aria-live="polite"></p>
             <button class="settings-reset" type="button" onclick="resetConfigurationSettings()">Reset to classic Lemon</button>
+            <button class="settings-reset" type="button" onclick="replayWelcomeTutorial()">Replay setup tutorial</button>
         </div>
     </div>
 </div>
 
     <script src="src/js/core.js"></script>
+    <script src="src/js/accounts.js"></script>
     <script src="src/js/home-widgets.js"></script>
     <script src="src/js/browser.js"></script>
     <script src="src/js/daily-tools.js"></script>
@@ -547,5 +816,9 @@
     <script src="src/js/shortcuts.js"></script>
     <script src="src/js/workspaces.js"></script>
     <script src="src/js/app.js"></script>
+    <script src="src/js/welcome.js"></script>
+    <script src="src/js/extensions.js"></script>
+    <script src="src/js/command-palette.js"></script>
+    <script src="src/js/ai-assistant.js"></script>
 </body>
 </html>

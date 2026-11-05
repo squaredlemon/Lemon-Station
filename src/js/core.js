@@ -36,10 +36,12 @@
 
     function writeWorkspaceText(key, value) {
         localStorage.setItem(getWorkspaceStorageKey(key), value);
+        if (typeof window.scheduleLemonCloudSync === 'function') window.scheduleLemonCloudSync();
     }
 
     function removeWorkspaceValue(key) {
         localStorage.removeItem(getWorkspaceStorageKey(key));
+        if (typeof window.scheduleLemonCloudSync === 'function') window.scheduleLemonCloudSync();
     }
 
     function readStorage(key, fallback) {
@@ -59,6 +61,7 @@
     function writeStorage(key, value) {
         try {
             localStorage.setItem(getWorkspaceStorageKey(key), JSON.stringify(value));
+            if (typeof window.scheduleLemonCloudSync === 'function') window.scheduleLemonCloudSync();
         } catch (error) {
             console.warn('Storage unavailable:', error);
         }
@@ -196,6 +199,7 @@
         });
         document.querySelectorAll('.nav-item').forEach(function(item) {
             item.classList.remove('active');
+            item.removeAttribute('aria-current');
         });
         if (currentPanel !== nextPanel) {
             var nextLeaveTimer = viewLeaveTimers.get(nextPanel);
@@ -212,7 +216,10 @@
         } else {
             nextPanel.classList.add('active');
         }
-        if (navItem) navItem.classList.add('active');
+        if (navItem) {
+            navItem.classList.add('active');
+            navItem.setAttribute('aria-current', 'page');
+        }
         document.body.classList.toggle('browser-view-active', viewId === 'browserView');
         document.getElementById('sidebar').classList.remove('open');
         var menuButton = document.querySelector('.menu-toggle');
@@ -223,7 +230,7 @@
         if (viewId === 'browserView') {
             if (!getActiveEmbeddedBrowserTab()) createEmbeddedBrowserTab();
             if (showHomeBase) {
-                showBrowserHome();
+                showBrowserHome(true);
             } else {
                 window.requestAnimationFrame(function() {
                     document.getElementById('browserAddressInput').focus();
@@ -259,6 +266,7 @@
 
         if (localDateKey(now) !== lastDate) {
             localStorage.removeItem('lemon_bucket');
+            if (typeof window.scheduleLemonCloudSync === 'function') window.scheduleLemonCloudSync();
             lastDate = localDateKey(now);
             bucket = readStorage('lemon_bucket', []);
             renderBucketLinks();

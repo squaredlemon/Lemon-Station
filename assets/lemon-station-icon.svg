@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="backdrop" x1="136" y1="84" x2="890" y2="940" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8D9"/>
+      <stop offset="1" stop-color="#F5CD3B"/>
+    </linearGradient>
+    <linearGradient id="lemon" x1="292" y1="356" x2="761" y2="738" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF27A"/>
+      <stop offset=".58" stop-color="#FFD83F"/>
+      <stop offset="1" stop-color="#F5A928"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="526" y1="227" x2="724" y2="328" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A9D66F"/>
+      <stop offset="1" stop-color="#477B45"/>
+    </linearGradient>
+    <filter id="shadow" x="170" y="221" width="698" height="668" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="24"/>
+      <feGaussianBlur stdDeviation="30"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix values="0 0 0 0 .30 0 0 0 0 .36 0 0 0 0 .12 0 0 0 .22 0"/>
+      <feBlend in2="BackgroundImageFix" result="effect1_dropShadow"/>
+      <feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="228" fill="url(#backdrop)"/>
+  <circle cx="786" cy="248" r="152" fill="#FFFCEB" fill-opacity=".26"/>
+  <circle cx="223" cy="796" r="185" fill="#EAAE2D" fill-opacity=".12"/>
+  <g filter="url(#shadow)">
+    <path d="M491 324c-4-85 81-151 171-128 36 9 68 33 91 67 83-16 166 32 191 116 25 83-13 171-88 210-13 124-110 223-239 243-129 20-250-37-305-140-75-22-132-89-141-171-9-83 32-160 104-199 54-29 133-33 216 2Z" fill="url(#lemon)"/>
+    <path d="M470 333c-4-54 42-99 94-94 24 2 44 14 57 33-50 5-91 35-110 77-13-7-27-12-41-16Z" fill="#FFF9B2" fill-opacity=".8"/>
+    <path d="M553 282c32-91 119-144 217-131-30 75-110 131-217 131Z" fill="url(#leaf)"/>
+    <path d="M563 273c61-40 114-65 179-87" fill="none" stroke="#E1F0A9" stroke-linecap="round" stroke-width="13" stroke-opacity=".82"/>
+    <path d="M274 523c-44 53-50 124-14 180 13 21 32 39 55 51-16-57-14-115 8-169 14-35 35-67 64-96-45 0-85 11-113 34Z" fill="#FFF9B2" fill-opacity=".52"/>
+    <path d="M391 700c70 58 166 83 263 68" fill="none" stroke="#F49B27" stroke-linecap="round" stroke-width="20" stroke-opacity=".42"/>
+  </g>
+  <path d="M240 228c68-58 150-91 244-99" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="18" stroke-opacity=".48"/>
+</svg>

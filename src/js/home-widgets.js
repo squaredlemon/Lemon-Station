@@ -101,6 +101,7 @@
             note.value = localStorage.getItem('lemon_home_quick_note') || '';
             note.addEventListener('input', function() {
                 localStorage.setItem('lemon_home_quick_note', note.value);
+                if (typeof window.scheduleLemonCloudSync === 'function') window.scheduleLemonCloudSync();
             });
             card.append(description, note);
             appendWidgetButton(actions, 'Open scratchpad', function() {

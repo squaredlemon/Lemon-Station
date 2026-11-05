@@ -9,6 +9,7 @@
         activeWorkspaceId = profile.id;
         document.body.dataset.workspace = workspaceTokens[activeWorkspaceId];
         localStorage.setItem('lemon_active_workspace', activeWorkspaceId);
+        if (typeof window.scheduleLemonCloudSync === 'function') window.scheduleLemonCloudSync();
         applyThemePalette();
         applyBackgroundStyle();
 

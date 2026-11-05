@@ -39,6 +39,7 @@
     var embeddedBrowserTabs = [];
     var activeEmbeddedBrowserTabId = null;
     var nextEmbeddedBrowserTabId = 1;
+    var isElectronBrowser = /\bElectron\//.test(navigator.userAgent);
     var embeddedBrowserBookmarks = readStorage('lemon_browser_bookmarks', []);
     if (!Array.isArray(embeddedBrowserBookmarks)) embeddedBrowserBookmarks = [];
     embeddedBrowserBookmarks = embeddedBrowserBookmarks.filter(function(item) {
@@ -53,9 +54,9 @@
         var tab = getActiveEmbeddedBrowserTab();
         var webview = tab && tab.webview;
         var isHome = !document.getElementById('browserCard').classList.contains('is-browsing');
-        var canGoBack = false;
-        var canGoForward = false;
-        if (webview && typeof webview.canGoBack === 'function') {
+        var canGoBack = Boolean(tab && tab.isFrame && tab.view === 'page');
+        var canGoForward = Boolean(tab && tab.isFrame && tab.view === 'page');
+        if (webview && !tab.isFrame && typeof webview.canGoBack === 'function') {
             try {
                 canGoBack = webview.canGoBack();
                 canGoForward = webview.canGoForward();
@@ -66,9 +67,13 @@
         }
         document.getElementById('browserBackButton').disabled = isHome || !canGoBack;
         document.getElementById('browserForwardButton').disabled = isHome || !canGoForward;
-        document.getElementById('browserReloadButton').disabled = isHome || !webview || typeof webview.reload !== 'function';
+        document.getElementById('browserReloadButton').disabled = isHome || !webview;
         document.getElementById('browserAddressInput').value = !isHome && tab && /^https?:\/\//i.test(tab.url) ? tab.url : '';
-        document.getElementById('browserSecurityIcon').textContent = tab && /^https:\/\//i.test(tab.url) ? '🔒' : '🍋';
+        document.getElementById('browserSecurityIcon').textContent = tab && tab.url
+            ? (/^https:\/\//i.test(tab.url) ? '🔒' : 'ⓘ')
+            : '⌕';
+        var externalButton = document.getElementById('browserOpenExternalButton');
+        externalButton.hidden = isElectronBrowser || isHome || !tab || !tab.url;
         updateEmbeddedBrowserBookmarkButton();
     }
 
@@ -111,10 +116,13 @@
         embeddedBrowserTabs.forEach(function(tab) {
             tab.webview.hidden = tab.id !== id;
         });
+        if (typeof window.refreshBrowserExtensionActions === 'function') {
+            window.refreshBrowserExtensionActions();
+        }
         renderEmbeddedBrowserTabs();
         updateEmbeddedBrowserControls();
         var active = getActiveEmbeddedBrowserTab();
-        if (active && active.url) showBrowserPage();
+        if (active && active.view === 'page') showBrowserPage();
         else showBrowserHome();
         document.getElementById('browserStatus').textContent = active && active.error
             ? 'This page could not be loaded. Check the address or your connection and try again.'
@@ -129,6 +137,8 @@
                 ? 'This page could not be loaded. Check the address or your connection and try again.'
                 : tab.loading
                 ? 'Loading ' + tab.title + '…'
+                : tab.isFrame && tab.url
+                    ? 'Page ready · Some websites block embedding. Use Open in new tab if needed.'
                 : tab.url || 'New tab · Search or enter a web address.';
             updateEmbeddedBrowserControls();
         }
@@ -137,6 +147,35 @@
 
     function connectEmbeddedBrowserTab(tab) {
         var webview = tab.webview;
+        if (tab.isFrame) {
+            webview.addEventListener('load', function() {
+                tab.loading = false;
+                tab.error = false;
+                webview.classList.add('is-ready');
+                try {
+                    var currentUrl = webview.contentWindow.location.href;
+                    if (currentUrl && /^https?:\/\//i.test(currentUrl)) {
+                        tab.url = currentUrl;
+                        tab.navigationUrl = currentUrl;
+                        tab.title = webview.contentDocument.title || new URL(currentUrl).hostname;
+                    }
+                } catch (error) {
+                    // Cross-origin frame contents are intentionally inaccessible to the host page.
+                }
+                recordEmbeddedBrowserVisit(tab);
+                document.getElementById('browserProgressFill').style.width = '100%';
+                updateEmbeddedBrowserTab(tab);
+                if (typeof window.refreshBrowserExtensions === 'function') {
+                    window.refreshBrowserExtensions(tab);
+                }
+                window.setTimeout(function() {
+                    if (tab.id === activeEmbeddedBrowserTabId && !tab.loading) {
+                        document.getElementById('browserProgressFill').style.width = '0';
+                    }
+                }, 500);
+            });
+            return;
+        }
         webview.addEventListener('did-start-loading', function() {
             tab.loading = true;
             tab.error = false;
@@ -155,6 +194,9 @@
                 document.getElementById('browserStatus').textContent = tab.url ? 'Ready · ' + tab.url : 'Page loaded.';
             }
             updateEmbeddedBrowserTab(tab);
+            if (typeof window.refreshBrowserExtensions === 'function') {
+                window.refreshBrowserExtensions(tab);
+            }
             window.setTimeout(function() {
                 if (tab.id === activeEmbeddedBrowserTabId && !tab.loading) {
                     document.getElementById('browserProgressFill').style.width = '0';
@@ -164,6 +206,8 @@
         function updateAddress(event) {
             if (event.url && /^https?:\/\//i.test(event.url)) {
                 tab.url = event.url;
+                tab.navigationUrl = event.url;
+                tab.view = 'page';
                 recordEmbeddedBrowserVisit(tab);
             }
             updateEmbeddedBrowserTab(tab);
@@ -184,25 +228,40 @@
         webview.addEventListener('dom-ready', function() {
             if (typeof webview.getURL === 'function') {
                 var currentUrl = webview.getURL();
-                if (currentUrl && /^https?:\/\//i.test(currentUrl)) tab.url = currentUrl;
+                if (currentUrl && /^https?:\/\//i.test(currentUrl)) {
+                    tab.url = currentUrl;
+                    tab.navigationUrl = currentUrl;
+                    tab.view = 'page';
+                }
             }
             updateEmbeddedBrowserTab(tab);
         });
     }
 
     function createEmbeddedBrowserTab(url) {
-        var webview = document.createElement('webview');
+        var webview = document.createElement(isElectronBrowser ? 'webview' : 'iframe');
         webview.className = 'browser-webview';
-        webview.setAttribute('partition', 'persist:lemon-hub-browser');
-        webview.setAttribute('webpreferences', 'contextIsolation=yes,nodeIntegration=no,sandbox=yes');
-        webview.setAttribute('aria-label', 'Web page');
+        if (isElectronBrowser) {
+            webview.setAttribute('partition', 'persist:lemon-hub-browser');
+            webview.setAttribute('webpreferences', 'contextIsolation=yes,nodeIntegration=no,sandbox=yes');
+        } else {
+            webview.title = 'Web page';
+            webview.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
+            webview.setAttribute('allow', 'clipboard-read; clipboard-write; fullscreen');
+            webview.referrerPolicy = 'strict-origin-when-cross-origin';
+        }
         webview.setAttribute('src', 'about:blank');
         document.getElementById('browserPageViewport').appendChild(webview);
         var tab = {
             id: nextEmbeddedBrowserTabId++,
             title: 'New tab',
             url: '',
+            navigationUrl: '',
+            view: 'home',
             loading: false,
+            isFrame: !isElectronBrowser,
+            navigationHistory: [],
+            historyIndex: -1,
             webview: webview
         };
         embeddedBrowserTabs.push(tab);
@@ -222,6 +281,8 @@
         if (!tab || !destination) return;
         showBrowserPage();
         tab.url = destination;
+        tab.navigationUrl = destination;
+        tab.view = 'page';
         try {
             tab.title = new URL(destination).hostname;
         } catch (error) {
@@ -229,6 +290,14 @@
         }
         var navigationId = (tab.navigationId || 0) + 1;
         tab.navigationId = navigationId;
+        if (tab.historyIndex < 0 || tab.navigationHistory[tab.historyIndex] !== destination) {
+            tab.navigationHistory = tab.navigationHistory.slice(0, tab.historyIndex + 1);
+            tab.navigationHistory.push(destination);
+            tab.historyIndex = tab.navigationHistory.length - 1;
+        }
+        tab.loading = true;
+        tab.error = false;
+        updateEmbeddedBrowserControls();
         document.getElementById('browserStatus').textContent = 'Preparing page…';
 
         function navigateWhenSized(attempt) {
@@ -253,6 +322,8 @@
                             }
                         });
                     }
+                } else if (tab.isFrame) {
+                    tab.webview.src = destination;
                 } else {
                     document.getElementById('browserStatus').textContent = 'Embedded web pages require the Lemon Station desktop app.';
                     return;
@@ -284,42 +355,118 @@
         renderEmbeddedBrowserTabs();
     }
 
-    function openBrowserMedia(navItem) {
-        switchView('browserView', navItem || document.getElementById('navMedia'));
-        document.getElementById('browserCard').classList.add('is-browsing', 'is-media');
-        document.getElementById('dashboard').hidden = true;
-        document.getElementById('browserStatus').textContent = 'Media · Vidcore';
-        updateEmbeddedBrowserControls();
-    }
-
     function loadVidcoreMovie(event) {
         if (event) event.preventDefault();
         var idInput = document.getElementById('vidcoreMovieId');
         var movieId = idInput.value.trim();
-        if (!/^(?:tt\d{7,8}|\d{1,10})$/.test(movieId)) {
+        var mediaType = document.getElementById('vidcoreMediaType').value;
+        var validId = /^(?:tt\d{7,8}|\d{1,10})$/.test(movieId);
+        idInput.setCustomValidity('');
+        if (!validId) {
             idInput.setCustomValidity('Enter an IMDb ID (for example, tt6263850) or a numeric TMDB ID.');
             idInput.reportValidity();
             return;
         }
-        idInput.setCustomValidity('');
-        var mediaType = document.getElementById('vidcoreMediaType').value;
-        var playerUrl = 'https://vidcore.io/movie/' + encodeURIComponent(movieId);
+        var playerUrl;
         if (mediaType === 'tv') {
-            var season = document.getElementById('vidcoreSeason').value;
-            var episode = document.getElementById('vidcoreEpisode').value;
-            if (!season || !episode || Number(season) < 1 || Number(episode) < 1) return;
+            var seasonInput = document.getElementById('vidcoreSeason');
+            var episodeInput = document.getElementById('vidcoreEpisode');
+            var season = Number(seasonInput.value);
+            var episode = Number(episodeInput.value);
+            seasonInput.setCustomValidity('');
+            episodeInput.setCustomValidity('');
+            if (!Number.isInteger(season) || season < 1) {
+                seasonInput.setCustomValidity('Enter a season number greater than zero.');
+                seasonInput.reportValidity();
+                return;
+            }
+            if (!Number.isInteger(episode) || episode < 1) {
+                episodeInput.setCustomValidity('Enter an episode number greater than zero.');
+                episodeInput.reportValidity();
+                return;
+            }
             playerUrl = 'https://vidcore.io/tv/' + encodeURIComponent(movieId) + '/' +
                 encodeURIComponent(season) + '/' + encodeURIComponent(episode);
+        } else {
+            playerUrl = 'https://vidcore.io/movie/' + encodeURIComponent(movieId);
         }
-        document.getElementById('browserMediaPage').querySelector('iframe').src = playerUrl;
+        var frame = document.getElementById('mediaPlayerFrame');
+        frame.title = 'Vidcore player';
+        frame.src = playerUrl;
+        document.getElementById('mediaPlayerStatus').textContent =
+            'Opening Vidcore. If the player does not load, check your connection and try again.';
+        document.getElementById('browserStatus').textContent = 'Media · Vidcore';
     }
 
     function toggleVidcoreMediaType() {
         var isTv = document.getElementById('vidcoreMediaType').value === 'tv';
         document.getElementById('vidcoreIdLabel').textContent = isTv ? 'Show ID' : 'Movie ID';
         ['vidcoreSeasonLabel', 'vidcoreSeason', 'vidcoreEpisodeLabel', 'vidcoreEpisode'].forEach(function(id) {
-            document.getElementById(id).hidden = !isTv;
+            var field = document.getElementById(id);
+            field.hidden = !isTv;
+            field.disabled = !isTv;
         });
+    }
+
+    async function searchWikidataTitles(query, mediaType) {
+        var searchUrl = new URL('https://www.wikidata.org/w/api.php');
+        searchUrl.search = new URLSearchParams({
+            action: 'wbsearchentities',
+            search: query,
+            language: 'en',
+            format: 'json',
+            type: 'item',
+            origin: '*'
+        });
+        var searchResponse = await fetch(searchUrl);
+        if (!searchResponse.ok) throw new Error('Title search returned HTTP ' + searchResponse.status + '.');
+        var searchData = await searchResponse.json();
+        var candidates = (Array.isArray(searchData.search) ? searchData.search : [])
+            .filter(function(item) { return item && /^Q\d+$/.test(item.id || ''); })
+            .slice(0, 20);
+        if (!candidates.length) return [];
+
+        var entityUrl = new URL('https://www.wikidata.org/w/api.php');
+        entityUrl.search = new URLSearchParams({
+            action: 'wbgetentities',
+            ids: candidates.map(function(item) { return item.id; }).join('|'),
+            props: 'claims',
+            format: 'json',
+            origin: '*'
+        });
+        var entityResponse = await fetch(entityUrl);
+        if (!entityResponse.ok) throw new Error('Title ID lookup returned HTTP ' + entityResponse.status + '.');
+        var entityData = await entityResponse.json();
+        var validTypes = mediaType === 'tv'
+            ? ['Q5398426', 'Q1259759', 'Q15416']
+            : ['Q11424'];
+
+        return candidates.reduce(function(matches, item) {
+            var entity = entityData.entities && entityData.entities[item.id];
+            var claims = entity && entity.claims;
+            var imdbClaim = claims && claims.P345 && claims.P345.find(function(claim) {
+                var value = claim.mainsnak && claim.mainsnak.datavalue && claim.mainsnak.datavalue.value;
+                return typeof value === 'string' && /^tt\d{7,8}$/.test(value);
+            });
+            var instanceClaims = claims && claims.P31 || [];
+            var matchesType = instanceClaims.some(function(claim) {
+                var value = claim.mainsnak && claim.mainsnak.datavalue && claim.mainsnak.datavalue.value;
+                return value && validTypes.includes(value.id);
+            });
+            if (!imdbClaim || !matchesType) return matches;
+
+            var releaseClaim = claims.P577 && claims.P577[0];
+            var releaseValue = releaseClaim && releaseClaim.mainsnak &&
+                releaseClaim.mainsnak.datavalue && releaseClaim.mainsnak.datavalue.value;
+            var yearMatch = releaseValue && typeof releaseValue.time === 'string' &&
+                releaseValue.time.match(/\d{4}/);
+            matches.push({
+                id: imdbClaim.mainsnak.datavalue.value,
+                title: item.label || item.id,
+                year: yearMatch ? yearMatch[0] : ''
+            });
+            return matches;
+        }, []).slice(0, 8);
     }
 
     async function searchVidcoreTitles(event) {
@@ -331,31 +478,13 @@
             results.textContent = 'Enter a title to search.';
             return;
         }
-        results.textContent = 'Searching IMDb…';
+        results.textContent = 'Searching for title IDs…';
         try {
             var mediaType = document.getElementById('vidcoreMediaType').value;
-            var electron = window.require && window.require('electron');
-            var matches;
-            if (electron && electron.ipcRenderer) {
-                matches = await electron.ipcRenderer.invoke('vidcore:search-imdb', query, mediaType);
-            } else {
-                var firstLetter = query[0].toLowerCase();
-                var response = await fetch('https://v2.sg.media-imdb.com/suggestion/' +
-                    encodeURIComponent(firstLetter) + '/' + encodeURIComponent(query) + '.json');
-                if (!response.ok) throw new Error('IMDb title search returned HTTP ' + response.status + '.');
-                var data = await response.json();
-                matches = (Array.isArray(data.d) ? data.d : []).filter(function(item) {
-                    return /^tt\d{7,8}$/.test(item.id || '') && (
-                        mediaType === 'tv' ? item.qid === 'tvSeries' || item.qid === 'tvMiniSeries' :
-                            item.qid === 'movie' || item.q === 'feature'
-                    );
-                }).map(function(item) {
-                    return { id: item.id, title: item.l || item.id, year: item.y || '' };
-                }).slice(0, 8);
-            }
+            var matches = await searchWikidataTitles(query, mediaType);
             results.replaceChildren();
             if (!matches.length) {
-                results.textContent = 'No matching IMDb titles found. Try a different search or enter the ID directly.';
+                results.textContent = 'No matching titles with an IMDb ID found. Try a different search or enter the ID directly.';
                 return;
             }
             matches.forEach(function(item) {
@@ -366,21 +495,30 @@
                 button.addEventListener('click', function() {
                     document.getElementById('vidcoreMediaType').value = mediaType;
                     toggleVidcoreMediaType();
-                    document.getElementById('vidcoreMovieId').value = item.id;
                     document.getElementById('vidcoreSearchResults').replaceChildren();
+                    document.getElementById('vidcoreMovieId').value = item.id;
                     document.getElementById('vidcoreSearchResults').textContent = 'Selected IMDb ID: ' + item.id;
                 });
                 results.appendChild(button);
             });
         } catch (error) {
-            results.textContent = 'Could not search IMDb: ' + error.message;
+            results.textContent = 'Could not search titles: ' + error.message;
         }
     }
+
+    document.getElementById('vidcoreTitleQuery').addEventListener('input', function() {
+        this.setCustomValidity('');
+    });
+    ['vidcoreMovieId', 'vidcoreSeason', 'vidcoreEpisode'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+    });
 
     function openBrowserHome(navItem) {
         var tab = getActiveEmbeddedBrowserTab();
         switchView('browserView', navItem || document.getElementById('navBrowser'));
-        if (tab && tab.url) showBrowserPage();
+        if (tab && tab.view === 'page') showBrowserPage();
         else showBrowserHome();
     }
 
@@ -399,29 +537,56 @@
         var tab = getActiveEmbeddedBrowserTab();
         var webview = tab && tab.webview;
         if (!webview) return;
-        if (action === 'back' && typeof webview.canGoBack === 'function' && webview.canGoBack()) webview.goBack();
+        if (action === 'back' && tab.isFrame) {
+            try {
+                webview.contentWindow.history.back();
+            } catch (error) {
+                document.getElementById('browserStatus').textContent = 'This page does not allow browser history control.';
+            }
+        } else if (action === 'forward' && tab.isFrame) {
+            try {
+                webview.contentWindow.history.forward();
+            } catch (error) {
+                document.getElementById('browserStatus').textContent = 'This page does not allow browser history control.';
+            }
+        } else if (action === 'back' && typeof webview.canGoBack === 'function' && webview.canGoBack()) webview.goBack();
         else if (action === 'forward' && typeof webview.canGoForward === 'function' && webview.canGoForward()) webview.goForward();
-        else if (action === 'reload' && typeof webview.reload === 'function') webview.reload();
-        else if (action === 'home') showBrowserHome();
+        else if (action === 'reload' && tab.isFrame) {
+            tab.loading = true;
+            webview.src = tab.url;
+        } else if (action === 'reload' && typeof webview.reload === 'function') webview.reload();
+        else if (action === 'home') showBrowserHome(true);
         updateEmbeddedBrowserControls();
     }
 
     function showBrowserPage() {
+        var tab = getActiveEmbeddedBrowserTab();
+        if (tab) tab.view = 'page';
         document.body.classList.add('browser-view-active');
-        document.getElementById('browserCard').classList.remove('is-media');
         document.getElementById('dashboard').hidden = true;
         document.getElementById('browserCard').classList.add('is-browsing');
         document.getElementById('browserStatus').textContent = 'Opening page…';
         updateEmbeddedBrowserControls();
     }
 
-    function showBrowserHome() {
-        document.getElementById('browserCard').classList.remove('is-media');
+    function showBrowserHome(force) {
+        var tab = getActiveEmbeddedBrowserTab();
+        if (!force && tab && tab.view === 'page') {
+            showBrowserPage();
+            return;
+        }
+        if (tab) tab.view = 'home';
         document.getElementById('dashboard').hidden = false;
         document.getElementById('browserCard').classList.remove('is-browsing');
         document.getElementById('browserProgressFill').style.width = '0';
         document.getElementById('browserStatus').textContent = 'Home Base · Search or enter a web address.';
         updateEmbeddedBrowserControls();
+    }
+
+    function openBrowserPageExternally() {
+        var tab = getActiveEmbeddedBrowserTab();
+        if (!tab || !/^https?:\/\//i.test(tab.url)) return;
+        window.open(tab.url, '_blank', 'noopener,noreferrer');
     }
 
     function closeEmbeddedBrowserTab(id) {
@@ -618,12 +783,31 @@
     document.getElementById('browserHistoryDialog').addEventListener('click', function(event) {
         if (event.target === this) closeEmbeddedBrowserHistory();
     });
+    var firstBrowserSurface = document.getElementById('hubBrowser');
+    var firstBrowserIsFrame = !isElectronBrowser;
+    if (firstBrowserIsFrame) {
+        var firstFrame = document.createElement('iframe');
+        firstFrame.id = 'hubBrowser';
+        firstFrame.className = 'browser-webview';
+        firstFrame.title = 'Web page';
+        firstFrame.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
+        firstFrame.setAttribute('allow', 'clipboard-read; clipboard-write; fullscreen');
+        firstFrame.referrerPolicy = 'strict-origin-when-cross-origin';
+        firstFrame.src = 'about:blank';
+        firstBrowserSurface.replaceWith(firstFrame);
+        firstBrowserSurface = firstFrame;
+    }
     var firstEmbeddedBrowserTab = {
         id: nextEmbeddedBrowserTabId++,
         title: 'New tab',
         url: '',
+        navigationUrl: '',
+        view: 'home',
         loading: false,
-        webview: document.getElementById('hubBrowser')
+        isFrame: firstBrowserIsFrame,
+        navigationHistory: [],
+        historyIndex: -1,
+        webview: firstBrowserSurface
     };
     embeddedBrowserTabs.push(firstEmbeddedBrowserTab);
     activeEmbeddedBrowserTabId = firstEmbeddedBrowserTab.id;
