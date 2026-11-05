@@ -4,7 +4,7 @@
   "main": "src/index.js",
   "compatibility_date": "2026-11-03",
   "vars": {
-    "ALLOWED_ORIGINS": "https://lemonstation.app,https://www.lemonstation.app,https://squaredlemon.github.io,http://127.0.0.1:8785,http://localhost:8785",
+    "ALLOWED_ORIGINS": "https://lemonstation.com,https://www.lemonstation.com,https://lemonstation.app,https://www.lemonstation.app,https://squaredlemon.github.io,http://127.0.0.1:8785,http://localhost:8785",
     "GEMINI_MODEL": "gemini-3.5-flash-lite"
   },
   "ratelimits": [

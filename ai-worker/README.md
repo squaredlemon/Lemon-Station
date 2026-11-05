@@ -34,7 +34,7 @@ This Cloudflare Worker keeps the Gemini API key on the server, checks a private 
 
 6. Copy the `https://…workers.dev` URL shown by Wrangler. In Lemon Station, open **Lemon AI**, paste the Worker URL and the same private access code, then choose **Connect**.
 
-The default allowed origins cover `https://lemonstation.app`, its `www` alias, the earlier GitHub Pages URL, and the local preview on port 8785. If you publish another domain or preview on another port, add its exact origin (scheme, hostname, and port, with no trailing slash) to `ALLOWED_ORIGINS` in `wrangler.jsonc`, then deploy again. Keep this list narrow. The rate-limit namespace ID in the config must be unique in your Cloudflare account; if Wrangler reports a collision, replace `6712034` with another unused numeric ID and redeploy.
+The default allowed origins cover `https://lemonstation.com` and `https://www.lemonstation.com`, the previous `lemonstation.app` aliases, the earlier GitHub Pages URL, and the local preview on port 8785. If you publish another domain or preview on another port, add its exact origin (scheme, hostname, and port, with no trailing slash) to `ALLOWED_ORIGINS` in `wrangler.jsonc`, then deploy again. Keep this list narrow. The rate-limit namespace ID in the config must be unique in your Cloudflare account; if Wrangler reports a collision, replace `6712034` with another unused numeric ID and redeploy.
 
 ## Local checks
 

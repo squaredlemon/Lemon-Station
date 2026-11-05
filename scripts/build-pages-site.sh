@@ -21,5 +21,5 @@ cp "$project_root/src/js/"*.js "$app_root/src/js/"
 : > "$pages_root/.nojekyll"
 
 printf 'Prepared Cloudflare Pages site in %s\n' "$pages_root"
-printf '  showcase: https://lemonstation.app/\n'
-printf '  app test: https://lemonstation.app/test/\n'
+printf '  showcase: https://lemonstation.com/\n'
+printf '  app test: https://lemonstation.com/test/\n'

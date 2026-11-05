@@ -14,11 +14,11 @@ Then open `http://127.0.0.1:8786`.
 
 ## Deploy the site and app together with Cloudflare Pages
 
-The Cloudflare Pages output is assembled in `docs/`: the marketing page is the domain root, and the current Lemon Station web app is copied to `docs/test/`. The public URLs are `https://lemonstation.app/` and `https://lemonstation.app/test/`.
+The Cloudflare Pages output is assembled in `docs/`: the marketing page is the domain root, and the current Lemon Station web app is copied to `docs/test/`. The intended URLs are `https://lemonstation.com/` and `https://lemonstation.com/test/`.
 
 Connect the repository to Cloudflare Pages with the project root set to the repository root, build command `sh scripts/build-pages-site.sh`, and build output directory `docs`. The app and marketing site are static; no framework or dependency install is needed. The generated `docs/` directory is also suitable for a direct Pages deploy with Wrangler.
 
-In the Cloudflare Pages project, add `lemonstation.app` as a custom domain and point its Cloudflare DNS record to that Pages project (the Cloudflare dashboard provides the target). Use `https://lemonstation.app/` for the showcase and `https://lemonstation.app/test/` for the app preview.
+In the Cloudflare Pages project, add `lemonstation.com` as a custom domain and point its Cloudflare DNS record to that Pages project (the Cloudflare dashboard provides the target). Use `https://lemonstation.com/` for the showcase and `https://lemonstation.com/test/` for the app preview.
 
 ## Download links
 
