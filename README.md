@@ -1,12 +1,12 @@
 # Lemon Station
 
-The product website will be published at https://lemonstation.com/ and the Lemon Station web app at https://lemonstation.com/test/.
+The product website is maintained in the separate private repository [squaredlemon/lemonstation-website](https://github.com/squaredlemon/lemonstation-website). Its Cloudflare Pages build publishes the showcase at https://lemonstation.com/ and includes this app at https://lemonstation.com/test/.
 
 #NOTE: The app's website version can browse sites that allow iframe embedding. Sites with restrictive security headers must be opened in a new tab; use the browser's Open in new tab button.
 
 Static, Cloudflare Pages-ready build of Lemon Station v0.3. Lemon AI uses an optional Gemini backend that you deploy as a Cloudflare Worker; its API key stays in Cloudflare and is never bundled into the website or desktop app.
 
-The Cloudflare Pages build is assembled in `docs/`: `docs/index.html` is the product showcase and `docs/test/` is the app preview. Connect this repository to Cloudflare Pages, use `sh scripts/build-pages-site.sh` as the build command, and set `docs` as the build output directory. Add `lemonstation.com` in the Cloudflare Pages project's **Custom domains** settings and point its Cloudflare DNS record at the Pages project.
+The website's Cloudflare Pages project is connected to the separate website repository. It builds the app from this repository's `app` branch into the `/test/` path, so the Pages project serves both routes from the same domain.
 
 On wide screens, Lemon Station keeps its navigation visible beside a spacious workspace; compact windows switch to a slide-out menu so the content stays usable.
 
